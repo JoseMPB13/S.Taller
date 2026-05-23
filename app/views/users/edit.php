@@ -22,6 +22,8 @@
 <div class="card" style="max-width: 650px; margin: 0 auto;">
     <h2 class="card-title">Editar Cuenta: <strong><?php echo htmlspecialchars($user['usuario']); ?></strong></h2>
     <form action="<?php echo BASE_URL; ?>/usuarios/actualizar/<?php echo $user['id']; ?>" method="POST">
+        <!-- Token CSRF de Seguridad -->
+        <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::getCsrfToken(); ?>">
         
         <div class="form-group">
             <label class="form-label" for="rol_id">Rol de Usuario *</label>

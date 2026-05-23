@@ -14,10 +14,8 @@ class UserController {
     private $roleModel;
 
     public function __construct() {
-        // Inicializar sesión si no está activa
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        // Exigir rol de administrador para cualquier operación de gestión de usuarios
+        \App\Helpers\AuthHelper::requireAdmin();
         $this->userModel = new User();
         $this->roleModel = new Role();
     }
@@ -38,6 +36,13 @@ class UserController {
      */
     public function guardar() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/usuarios');
+            exit();
+        }
+
+        // Validar token CSRF para seguridad del formulario
+        if (!\App\Helpers\AuthHelper::validateCsrf($_POST['csrf_token'] ?? null)) {
+            $_SESSION['error'] = "Falsificación de petición detectada (Token CSRF inválido).";
             header('Location: ' . BASE_URL . '/usuarios');
             exit();
         }
@@ -136,6 +141,13 @@ class UserController {
     public function actualizar($id) {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ' . BASE_URL . '/usuarios');
+            exit();
+        }
+
+        // Validar token CSRF para seguridad del formulario
+        if (!\App\Helpers\AuthHelper::validateCsrf($_POST['csrf_token'] ?? null)) {
+            $_SESSION['error'] = "Falsificación de petición detectada (Token CSRF inválido).";
+            header('Location: ' . BASE_URL . '/usuarios/editar/' . $id);
             exit();
         }
 

@@ -186,4 +186,23 @@ class User {
         $stmt->execute($params);
         return $stmt->fetchColumn() > 0;
     }
+
+    /**
+     * Obtiene un usuario activo por su nombre de usuario o correo electrónico.
+     * 
+     * @param string $login Nombre de usuario o correo electrónico
+     * @return array|false Datos del usuario con su rol, o falso si no se encuentra
+     */
+    public function getByUsernameOrEmail(string $login) {
+        $sql = "SELECT u.*, r.nombre as rol_nombre 
+                FROM usuarios u 
+                INNER JOIN roles r ON u.rol_id = r.id 
+                WHERE (u.usuario = :login_u OR u.correo = :login_c) AND u.estado = 'activo' AND u.deleted_at IS NULL";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'login_u' => $login,
+            'login_c' => $login
+        ]);
+        return $stmt->fetch();
+    }
 }

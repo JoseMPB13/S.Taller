@@ -13,7 +13,9 @@
                 S.<span>Taller</span>
             </a>
             <ul class="nav-links">
-                <li><a href="<?php echo BASE_URL; ?>/usuarios" class="active">Usuarios</a></li>
+                <?php if (\App\Helpers\AuthHelper::isAdmin()): ?>
+                    <li><a href="<?php echo BASE_URL; ?>/usuarios" class="active">Usuarios</a></li>
+                <?php endif; ?>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Clientes</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Trabajadores</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Autos</a></li>
@@ -21,6 +23,22 @@
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Inventario</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Servicios</a></li>
             </ul>
+
+            <?php if (\App\Helpers\AuthHelper::isLoggedIn()): ?>
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">
+                            <?php echo htmlspecialchars($_SESSION['user_nombre']); ?>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 500; text-transform: uppercase;">
+                            <?php echo htmlspecialchars($_SESSION['user_rol']); ?>
+                        </div>
+                    </div>
+                    <a href="<?php echo BASE_URL; ?>/logout" class="btn btn-secondary btn-sm" style="border-color: var(--danger); color: #f87171; font-weight: 600;">
+                        Cerrar Sesión
+                    </a>
+                </div>
+            <?php endif; ?>
         </nav>
     </header>
     <main>

@@ -64,23 +64,46 @@ spl_autoload_register(function ($class) {
 $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'usuarios';
 $urlParts = explode('/', $url);
 
-// Determinar el controlador
+$currentRoute = strtolower($urlParts[0] ?? 'usuarios');
+
+// 1. Inicializar sesión de forma segura
+\App\Helpers\AuthHelper::initSession();
+
+// 2. Control de Acceso (Middleware Global): Solo la ruta 'login' es pública
+$publicRoutes = ['login'];
+if (!in_array($currentRoute, $publicRoutes)) {
+    \App\Helpers\AuthHelper::requireLogin();
+}
+
+// 3. Determinar el controlador
 $controllerName = 'Usuarios';
 if (!empty($urlParts[0])) {
     $controllerName = ucfirst($urlParts[0]);
 }
 
 // Mapear el nombre a la clase del controlador
-if ($controllerName === 'Usuarios' || $controllerName === 'Users' || $controllerName === 'Usuario') {
-    $controllerClass = 'App\\Controllers\\UserController';
+if ($controllerName === 'Login' || $controllerName === 'Logout' || $controllerName === 'Auth') {
+    $controllerClass = 'App\\Controllers\\AuthController';
+    // Forzar la acción según la URL amigable
+    if (strtolower($controllerName) === 'login') {
+        $action = 'login';
+    } elseif (strtolower($controllerName) === 'logout') {
+        $action = 'logout';
+    } else {
+        $action = isset($urlParts[1]) && !empty($urlParts[1]) ? $urlParts[1] : 'login';
+    }
 } else {
-    $controllerClass = 'App\\Controllers\\' . $controllerName . 'Controller';
-}
-
-// Determinar la acción (método)
-$action = 'index';
-if (isset($urlParts[1]) && !empty($urlParts[1])) {
-    $action = $urlParts[1];
+    if ($controllerName === 'Usuarios' || $controllerName === 'Users' || $controllerName === 'Usuario') {
+        $controllerClass = 'App\\Controllers\\UserController';
+    } else {
+        $controllerClass = 'App\\Controllers\\' . $controllerName . 'Controller';
+    }
+    
+    // Determinar la acción (método)
+    $action = 'index';
+    if (isset($urlParts[1]) && !empty($urlParts[1])) {
+        $action = $urlParts[1];
+    }
 }
 
 // Parámetros adicionales

@@ -90,6 +90,8 @@ unset($_SESSION['form_data']);
     <div class="card">
         <h2 class="card-title">Nuevo Usuario</h2>
         <form action="<?php echo BASE_URL; ?>/usuarios/guardar" method="POST">
+            <!-- Token CSRF de Seguridad -->
+            <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::getCsrfToken(); ?>">
             <div class="form-group">
                 <label class="form-label" for="rol_id">Rol de Usuario *</label>
                 <select class="form-control" name="rol_id" id="rol_id" required>
