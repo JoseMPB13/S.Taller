@@ -1,3 +1,12 @@
+<?php
+// Determinar la ruta actual de forma segura para la clase activa de los enlaces del navbar
+$urlParam = $_GET['url'] ?? '';
+$urlParts = explode('/', rtrim($urlParam, '/'));
+$currentRoute = strtolower($urlParts[0] ?? 'usuarios');
+if (empty($currentRoute)) {
+    $currentRoute = 'usuarios';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,9 +23,9 @@
             </a>
             <ul class="nav-links">
                 <?php if (\App\Helpers\AuthHelper::isAdmin()): ?>
-                    <li><a href="<?php echo BASE_URL; ?>/usuarios" class="active">Usuarios</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>/usuarios" class="<?php echo ($currentRoute === 'usuarios') ? 'active' : ''; ?>">Usuarios</a></li>
                 <?php endif; ?>
-                <li><a href="#" style="opacity: 0.5; pointer-events: none;">Clientes</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/clientes" class="<?php echo ($currentRoute === 'clientes') ? 'active' : ''; ?>">Clientes</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Trabajadores</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Autos</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Ordenes (OT)</a></li>

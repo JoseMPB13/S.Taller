@@ -95,6 +95,8 @@ if ($controllerName === 'Login' || $controllerName === 'Logout' || $controllerNa
 } else {
     if ($controllerName === 'Usuarios' || $controllerName === 'Users' || $controllerName === 'Usuario') {
         $controllerClass = 'App\\Controllers\\UserController';
+    } elseif ($controllerName === 'Clientes' || $controllerName === 'Clients' || $controllerName === 'Cliente') {
+        $controllerClass = 'App\\Controllers\\ClientController';
     } else {
         $controllerClass = 'App\\Controllers\\' . $controllerName . 'Controller';
     }
