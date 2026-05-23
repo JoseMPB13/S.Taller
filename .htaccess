@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirigir la raíz del proyecto al directorio /public
+    RewriteRule ^$ public/ [L]
+    
+    # Redirigir cualquier otra petición a /public manteniendo el path original
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
