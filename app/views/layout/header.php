@@ -26,8 +26,8 @@ if (empty($currentRoute)) {
                     <li><a href="<?php echo BASE_URL; ?>/usuarios" class="<?php echo ($currentRoute === 'usuarios') ? 'active' : ''; ?>">Usuarios</a></li>
                 <?php endif; ?>
                 <li><a href="<?php echo BASE_URL; ?>/clientes" class="<?php echo ($currentRoute === 'clientes') ? 'active' : ''; ?>">Clientes</a></li>
-                <li><a href="#" style="opacity: 0.5; pointer-events: none;">Trabajadores</a></li>
-                <li><a href="#" style="opacity: 0.5; pointer-events: none;">Autos</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/trabajadores" class="<?php echo ($currentRoute === 'trabajadores') ? 'active' : ''; ?>">Trabajadores</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/autos" class="<?php echo ($currentRoute === 'autos') ? 'active' : ''; ?>">Autos</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Ordenes (OT)</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Inventario</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Servicios</a></li>
