@@ -29,8 +29,8 @@ if (empty($currentRoute)) {
                 <li><a href="<?php echo BASE_URL; ?>/trabajadores" class="<?php echo ($currentRoute === 'trabajadores') ? 'active' : ''; ?>">Trabajadores</a></li>
                 <li><a href="<?php echo BASE_URL; ?>/autos" class="<?php echo ($currentRoute === 'autos') ? 'active' : ''; ?>">Autos</a></li>
                 <li><a href="#" style="opacity: 0.5; pointer-events: none;">Ordenes (OT)</a></li>
-                <li><a href="#" style="opacity: 0.5; pointer-events: none;">Inventario</a></li>
-                <li><a href="#" style="opacity: 0.5; pointer-events: none;">Servicios</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/inventario" class="<?php echo ($currentRoute === 'inventario') ? 'active' : ''; ?>">Inventario</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/servicios" class="<?php echo ($currentRoute === 'servicios') ? 'active' : ''; ?>">Servicios</a></li>
             </ul>
 
             <?php if (\App\Helpers\AuthHelper::isLoggedIn()): ?>

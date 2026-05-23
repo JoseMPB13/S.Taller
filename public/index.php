@@ -101,6 +101,10 @@ if ($controllerName === 'Login' || $controllerName === 'Logout' || $controllerNa
         $controllerClass = 'App\\Controllers\\CarController';
     } elseif ($controllerName === 'Trabajadores' || $controllerName === 'Workers' || $controllerName === 'Worker' || $controllerName === 'Trabajador') {
         $controllerClass = 'App\\Controllers\\WorkerController';
+    } elseif ($controllerName === 'Inventario' || $controllerName === 'Inventory') {
+        $controllerClass = 'App\\Controllers\\InventoryController';
+    } elseif ($controllerName === 'Servicios' || $controllerName === 'Services' || $controllerName === 'Servicio' || $controllerName === 'Service') {
+        $controllerClass = 'App\\Controllers\\ServiceController';
     } else {
         $controllerClass = 'App\\Controllers\\' . $controllerName . 'Controller';
     }
