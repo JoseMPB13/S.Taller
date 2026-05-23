@@ -10,6 +10,7 @@ ini_set('display_errors', 1);
 
 // Definir constante del directorio raíz de la aplicación
 define('ROOT_PATH', dirname(__DIR__));
+define('BASE_URL', '/taller');
 
 // Registrar spl_autoload_register para el cargador de clases automático (Autoloader)
 spl_autoload_register(function ($class) {
@@ -59,11 +60,44 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// Prueba de conexión e integración del Autoloader con Database
-try {
-    $db = \Config\Database::getInstance()->getConnection();
-    echo "<h1>¡Estructura MVC y conexión a BD exitosas!</h1>";
-    echo "<p>El Autoloader ha cargado correctamente la clase <strong>Config\\Database</strong> y se ha establecido la conexión PDO de forma segura.</p>";
-} catch (\Exception $e) {
-    echo "<h1>Error en configuración: " . $e->getMessage() . "</h1>";
+// Enrutamiento simple (Front Controller Routing)
+$url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'usuarios';
+$urlParts = explode('/', $url);
+
+// Determinar el controlador
+$controllerName = 'Usuarios';
+if (!empty($urlParts[0])) {
+    $controllerName = ucfirst($urlParts[0]);
+}
+
+// Mapear el nombre a la clase del controlador
+if ($controllerName === 'Usuarios' || $controllerName === 'Users' || $controllerName === 'Usuario') {
+    $controllerClass = 'App\\Controllers\\UserController';
+} else {
+    $controllerClass = 'App\\Controllers\\' . $controllerName . 'Controller';
+}
+
+// Determinar la acción (método)
+$action = 'index';
+if (isset($urlParts[1]) && !empty($urlParts[1])) {
+    $action = $urlParts[1];
+}
+
+// Parámetros adicionales
+$params = array_slice($urlParts, 2);
+
+// Instanciar y ejecutar
+if (class_exists($controllerClass)) {
+    $controllerInstance = new $controllerClass();
+    if (method_exists($controllerInstance, $action)) {
+        call_user_func_array([$controllerInstance, $action], $params);
+    } else {
+        http_response_code(404);
+        echo "<h1>404 - Acción no encontrada</h1>";
+        echo "<p>La acción '{$action}' no existe en el controlador '{$controllerClass}'.</p>";
+    }
+} else {
+    http_response_code(404);
+    echo "<h1>404 - Recurso no encontrado</h1>";
+    echo "<p>El controlador '{$controllerClass}' no se encuentra en el sistema.</p>";
 }
