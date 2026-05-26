@@ -61,10 +61,10 @@ spl_autoload_register(function ($class) {
 });
 
 // Enrutamiento simple (Front Controller Routing)
-$url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'usuarios';
+$url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'dashboard';
 $urlParts = explode('/', $url);
 
-$currentRoute = strtolower($urlParts[0] ?? 'usuarios');
+$currentRoute = strtolower($urlParts[0] ?? 'dashboard');
 
 // 1. Inicializar sesión de forma segura
 \App\Helpers\AuthHelper::initSession();
@@ -93,7 +93,9 @@ if ($controllerName === 'Login' || $controllerName === 'Logout' || $controllerNa
         $action = isset($urlParts[1]) && !empty($urlParts[1]) ? $urlParts[1] : 'login';
     }
 } else {
-    if ($controllerName === 'Usuarios' || $controllerName === 'Users' || $controllerName === 'Usuario') {
+    if ($controllerName === 'Dashboard') {
+        $controllerClass = 'App\\Controllers\\DashboardController';
+    } elseif ($controllerName === 'Usuarios' || $controllerName === 'Users' || $controllerName === 'Usuario') {
         $controllerClass = 'App\\Controllers\\UserController';
     } elseif ($controllerName === 'Clientes' || $controllerName === 'Clients' || $controllerName === 'Cliente') {
         $controllerClass = 'App\\Controllers\\ClientController';

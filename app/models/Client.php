@@ -147,4 +147,11 @@ class Client {
         $stmt->execute($params);
         return $stmt->fetchColumn() > 0;
     }
+    /**
+     * Cuenta el total de clientes activos.
+     */
+    public function countAll(): int {
+        $stmt = $this->db->query("SELECT COUNT(*) FROM clientes WHERE estado = 'activo' AND deleted_at IS NULL");
+        return (int)$stmt->fetchColumn();
+    }
 }

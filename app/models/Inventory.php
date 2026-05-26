@@ -176,4 +176,17 @@ class Inventory {
         ]);
         return $stmt->rowCount() > 0;
     }
+    /**
+     * Obtiene artículos con stock crítico.
+     */
+    public function getLowStock(): array {
+        $sql = "SELECT id, codigo_sku, nombre, stock, stock_minimo 
+                FROM inventario 
+                WHERE stock <= stock_minimo 
+                  AND estado = 'activo' 
+                  AND deleted_at IS NULL 
+                ORDER BY stock ASC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
 }

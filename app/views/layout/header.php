@@ -22,6 +22,7 @@ if (empty($currentRoute)) {
                 S.<span>Taller</span>
             </a>
             <ul class="nav-links">
+                <li><a href="<?php echo BASE_URL; ?>/dashboard" class="<?php echo ($currentRoute === 'dashboard') ? 'active' : ''; ?>">Dashboard</a></li>
                 <?php if (\App\Helpers\AuthHelper::isAdmin()): ?>
                     <li><a href="<?php echo BASE_URL; ?>/usuarios" class="<?php echo ($currentRoute === 'usuarios') ? 'active' : ''; ?>">Usuarios</a></li>
                 <?php endif; ?>

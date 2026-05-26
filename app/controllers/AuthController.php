@@ -23,7 +23,7 @@ class AuthController {
     public function login() {
         // Redirigir a usuarios si ya ha iniciado sesión
         if (AuthHelper::isLoggedIn()) {
-            header('Location: ' . BASE_URL . '/usuarios');
+            header('Location: ' . BASE_URL . '/dashboard');
             exit();
         }
 
@@ -64,7 +64,7 @@ class AuthController {
                 $_SESSION['user_rol_id'] = $user['rol_id'];
 
                 $_SESSION['success'] = "¡Bienvenido de nuevo, " . htmlspecialchars($user['nombre']) . "!";
-                header('Location: ' . BASE_URL . '/usuarios');
+                header('Location: ' . BASE_URL . '/dashboard');
                 exit();
             } else {
                 $_SESSION['error'] = "Credenciales incorrectas o usuario inactivo.";

@@ -141,4 +141,52 @@ class WorkOrder {
             'id' => $id
         ]);
     }
+    /**
+     * Cuenta el total de órdenes activas (no cerradas ni anuladas).
+     */
+    public function countActive(): int {
+        $stmt = $this->db->query("SELECT COUNT(*) FROM ordenes_trabajo WHERE estado NOT IN ('cerrado', 'anulado', 'entregado')");
+        return (int)$stmt->fetchColumn();
+    }
+
+    /**
+     * Obtiene las OTs más recientes.
+     */
+    public function getRecent(int $limit = 5): array {
+        $sql = "SELECT ot.id, ot.codigo, ot.fecha_ingreso, ot.estado, 
+                       c.nombres as cliente_nombres, c.apellidos as cliente_apellidos, 
+                       a.placa as auto_placa
+                FROM ordenes_trabajo ot
+                INNER JOIN clientes c ON ot.cliente_id = c.id
+                INNER JOIN autos a ON ot.auto_id = a.id
+                ORDER BY ot.fecha_ingreso DESC
+                LIMIT :limit";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Obtiene el total recaudado de OTs 'cerrado'.
+     * Suma los repuestos (cantidad * precio) y servicios (precio_aplicado - descuento).
+     */
+    public function getTotalRevenue(): float {
+        // Query para sumar Repuestos de OTs cerradas
+        $sqlRepuestos = "SELECT COALESCE(SUM(or_rep.cantidad * or_rep.precio_unitario), 0) as total_rep 
+                         FROM ot_repuestos or_rep
+                         INNER JOIN ordenes_trabajo ot ON or_rep.ot_id = ot.id
+                         WHERE ot.estado = 'cerrado'";
+        
+        // Query para sumar Servicios de OTs cerradas
+        $sqlServicios = "SELECT COALESCE(SUM(os.precio_aplicado - os.descuento_aplicado), 0) as total_ser
+                         FROM ot_servicios os
+                         INNER JOIN ordenes_trabajo ot ON os.ot_id = ot.id
+                         WHERE ot.estado = 'cerrado'";
+
+        $totalRep = (float)$this->db->query($sqlRepuestos)->fetchColumn();
+        $totalSer = (float)$this->db->query($sqlServicios)->fetchColumn();
+
+        return $totalRep + $totalSer;
+    }
 }
