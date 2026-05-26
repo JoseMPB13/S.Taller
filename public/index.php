@@ -105,6 +105,8 @@ if ($controllerName === 'Login' || $controllerName === 'Logout' || $controllerNa
         $controllerClass = 'App\\Controllers\\InventoryController';
     } elseif ($controllerName === 'Servicios' || $controllerName === 'Services' || $controllerName === 'Servicio' || $controllerName === 'Service') {
         $controllerClass = 'App\\Controllers\\ServiceController';
+    } elseif ($controllerName === 'Ordenes' || $controllerName === 'Ot' || $controllerName === 'Workorders') {
+        $controllerClass = 'App\\Controllers\\WorkOrderController';
     } else {
         $controllerClass = 'App\\Controllers\\' . $controllerName . 'Controller';
     }

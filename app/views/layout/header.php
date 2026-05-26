@@ -28,7 +28,7 @@ if (empty($currentRoute)) {
                 <li><a href="<?php echo BASE_URL; ?>/clientes" class="<?php echo ($currentRoute === 'clientes') ? 'active' : ''; ?>">Clientes</a></li>
                 <li><a href="<?php echo BASE_URL; ?>/trabajadores" class="<?php echo ($currentRoute === 'trabajadores') ? 'active' : ''; ?>">Trabajadores</a></li>
                 <li><a href="<?php echo BASE_URL; ?>/autos" class="<?php echo ($currentRoute === 'autos') ? 'active' : ''; ?>">Autos</a></li>
-                <li><a href="#" style="opacity: 0.5; pointer-events: none;">Ordenes (OT)</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/ordenes" class="<?php echo ($currentRoute === 'ordenes') ? 'active' : ''; ?>">Ordenes (OT)</a></li>
                 <li><a href="<?php echo BASE_URL; ?>/inventario" class="<?php echo ($currentRoute === 'inventario') ? 'active' : ''; ?>">Inventario</a></li>
                 <li><a href="<?php echo BASE_URL; ?>/servicios" class="<?php echo ($currentRoute === 'servicios') ? 'active' : ''; ?>">Servicios</a></li>
             </ul>
