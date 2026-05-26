@@ -6,6 +6,9 @@ use App\Models\WorkOrder;
 use App\Models\Client;
 use App\Models\Car;
 use App\Models\Worker;
+use App\Models\WorkOrderDetail;
+use App\Models\Inventory;
+use App\Models\Service;
 use App\Helpers\AuthHelper;
 
 /**
@@ -17,6 +20,9 @@ class WorkOrderController {
     private $clientModel;
     private $carModel;
     private $workerModel;
+    private $detailModel;
+    private $inventoryModel;
+    private $serviceModel;
 
     public function __construct() {
         AuthHelper::initSession();
@@ -24,6 +30,9 @@ class WorkOrderController {
         $this->clientModel = new Client();
         $this->carModel = new Car();
         $this->workerModel = new Worker();
+        $this->detailModel = new WorkOrderDetail();
+        $this->inventoryModel = new Inventory();
+        $this->serviceModel = new Service();
     }
 
     /**
@@ -140,6 +149,134 @@ class WorkOrderController {
         }
 
         header('Location: ' . BASE_URL . '/ordenes');
+        exit();
+    }
+
+    /**
+     * Vista de detalles operativos de la OT.
+     */
+    public function detalles($id) {
+        $id = (int)$id;
+        $ot = $this->workOrderModel->getById($id);
+
+        if (!$ot) {
+            $_SESSION['error'] = "Orden de Trabajo no encontrada.";
+            header('Location: ' . BASE_URL . '/ordenes');
+            exit();
+        }
+
+        // Obtener detalles
+        $mecanicos_asignados = $this->detailModel->getMechanics($id);
+        $repuestos_consumidos = $this->detailModel->getParts($id);
+        $servicios_aplicados = $this->detailModel->getServices($id);
+
+        // Catálogos para los selectores del formulario de adición
+        $trabajadores = $this->workerModel->getAll();
+        $inventario = $this->inventoryModel->getAll();
+        $servicios = $this->serviceModel->getAll();
+
+        require_once ROOT_PATH . '/app/views/workorders/detalles.php';
+    }
+
+    /**
+     * Asigna un mecánico adicional a la OT.
+     */
+    public function agregar_mecanico($ot_id) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+            exit();
+        }
+
+        $trabajador_id = (int)($_POST['trabajador_id'] ?? 0);
+        $motivo = trim(filter_input(INPUT_POST, 'motivo', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $usuario_asignador = $_SESSION['user_id'] ?? 1;
+
+        if ($trabajador_id > 0) {
+            if ($this->detailModel->addMechanic($ot_id, $trabajador_id, $usuario_asignador, $motivo)) {
+                $_SESSION['success'] = "Mecánico asignado exitosamente.";
+            } else {
+                $_SESSION['error'] = "No se pudo asignar. (Probablemente ya esté asignado o hubo un error).";
+            }
+        } else {
+            $_SESSION['error'] = "Debe seleccionar un mecánico.";
+        }
+
+        header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+        exit();
+    }
+
+    /**
+     * Agrega un repuesto a la OT y descuenta stock (RF-013).
+     */
+    public function agregar_repuesto($ot_id) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+            exit();
+        }
+
+        $item_id = (int)($_POST['item_id'] ?? 0);
+        $cantidad = (int)($_POST['cantidad'] ?? 0);
+        $usuario = $_SESSION['user_id'] ?? 1;
+
+        if ($item_id <= 0 || $cantidad <= 0) {
+            $_SESSION['error'] = "Debe seleccionar un repuesto y la cantidad debe ser mayor a 0.";
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+            exit();
+        }
+
+        // Obtener costos y precios actuales del catálogo
+        $repuesto = $this->inventoryModel->getById($item_id);
+        if (!$repuesto) {
+            $_SESSION['error'] = "El repuesto seleccionado no existe.";
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+            exit();
+        }
+
+        if ($repuesto['stock'] < $cantidad) {
+            $_SESSION['error'] = "Stock insuficiente. Stock actual: " . $repuesto['stock'];
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+            exit();
+        }
+
+        // Guardar con precios congelados
+        if ($this->detailModel->addPart($ot_id, $item_id, $cantidad, $repuesto['precio'], $repuesto['costo'], $usuario)) {
+            $_SESSION['success'] = "Repuesto agregado y stock descontado exitosamente.";
+        } else {
+            $_SESSION['error'] = "Error al agregar repuesto (Stock modificado concurrentemente).";
+        }
+
+        header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+        exit();
+    }
+
+    /**
+     * Agrega un servicio aplicado a la OT.
+     */
+    public function agregar_servicio($ot_id) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+            exit();
+        }
+
+        $servicio_id = (int)($_POST['servicio_id'] ?? 0);
+        $precio_aplicado = (float)($_POST['precio_aplicado'] ?? 0);
+        $descuento = (float)($_POST['descuento_aplicado'] ?? 0);
+        $tiempo_real = (int)($_POST['tiempo_real'] ?? 0);
+        $usuario = $_SESSION['user_id'] ?? 1;
+
+        if ($servicio_id <= 0 || $precio_aplicado < 0) {
+            $_SESSION['error'] = "Debe seleccionar un servicio y el precio debe ser mayor o igual a 0.";
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
+            exit();
+        }
+
+        if ($this->detailModel->addService($ot_id, $servicio_id, $precio_aplicado, $descuento, $tiempo_real, $usuario)) {
+            $_SESSION['success'] = "Servicio agregado a la Orden de Trabajo.";
+        } else {
+            $_SESSION['error'] = "Error al registrar el servicio.";
+        }
+
+        header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
         exit();
     }
 }

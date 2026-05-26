@@ -137,7 +137,7 @@
                                             <option value="anulado">Anulado</option>
                                         </select>
                                     </form>
-                                    <a href="#" class="btn btn-secondary btn-sm" title="Detalles Próximamente">Ver</a>
+                                    <a href="<?php echo BASE_URL; ?>/ordenes/detalles/<?php echo $ot['id']; ?>" class="btn btn-secondary btn-sm" title="Ver Detalles Operativos">Ver</a>
                                 </div>
                             </td>
                         </tr>
