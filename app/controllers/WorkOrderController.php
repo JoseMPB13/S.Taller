@@ -279,4 +279,74 @@ class WorkOrderController {
         header('Location: ' . BASE_URL . '/ordenes/detalles/' . $ot_id);
         exit();
     }
+    /**
+     * Cierra financieramente la OT (Liquidación). (RF-015, RF-008)
+     */
+    public function liquidar($id) {
+        $id = (int)$id;
+        
+        if (!AuthHelper::isAdmin()) {
+            $_SESSION['error'] = "Acceso denegado: Solo un Administrador puede liquidar la Orden de Trabajo.";
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $id);
+            exit();
+        }
+
+        $ot = $this->workOrderModel->getById($id);
+        if (!$ot) {
+            header('Location: ' . BASE_URL . '/ordenes');
+            exit();
+        }
+
+        if ($this->workOrderModel->updateStatus($id, 'cerrado')) {
+            $_SESSION['success'] = "Orden de Trabajo Liquidada y Cerrada exitosamente.";
+            header('Location: ' . BASE_URL . '/ordenes/comprobante/' . $id);
+        } else {
+            $_SESSION['error'] = "Ocurrió un error al liquidar la Orden de Trabajo.";
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $id);
+        }
+        exit();
+    }
+
+    /**
+     * Muestra el comprobante final de la OT optimizado para impresión. (RF-015)
+     */
+    public function comprobante($id) {
+        $id = (int)$id;
+        $ot = $this->workOrderModel->getById($id);
+
+        if (!$ot) {
+            $_SESSION['error'] = "Orden de Trabajo no encontrada.";
+            header('Location: ' . BASE_URL . '/ordenes');
+            exit();
+        }
+
+        // Obtener detalles consumidos (precios históricos)
+        $repuestos = $this->detailModel->getParts($id);
+        $servicios = $this->detailModel->getServices($id);
+
+        // Cálculos
+        $subtotal_repuestos = 0;
+        foreach ($repuestos as $rp) {
+            $subtotal_repuestos += ($rp['cantidad'] * $rp['precio_unitario']);
+        }
+
+        $subtotal_servicios = 0;
+        $total_descuentos = 0;
+        foreach ($servicios as $sv) {
+            $subtotal_servicios += $sv['precio_aplicado'];
+            $total_descuentos += $sv['descuento_aplicado'];
+        }
+
+        $subtotal = $subtotal_repuestos + $subtotal_servicios - $total_descuentos;
+        
+        // Impuestos (Ej: 13% IVA Bolivia si aplica)
+        // Por simplicidad del modelo, asumimos que los precios ya incluyen IVA,
+        // pero podemos desglosarlo para el recibo.
+        $tasa_iva = 0.13;
+        $monto_iva = $subtotal * $tasa_iva;
+        $subtotal_sin_iva = $subtotal - $monto_iva;
+        $total_general = $subtotal; // El total a pagar
+
+        require_once ROOT_PATH . '/app/views/workorders/comprobante.php';
+    }
 }

@@ -223,6 +223,24 @@
                 </div>
                 <div style="font-size: 0.9rem; color: var(--text-muted);">Bolivianos (BOB)</div>
             </div>
+
+            <div style="margin-top: 1.5rem;">
+                <?php if ($ot['estado'] === 'cerrado' || $ot['estado'] === 'liquidada'): ?>
+                    <a href="<?php echo BASE_URL; ?>/ordenes/comprobante/<?php echo $ot['id']; ?>" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-bottom: 0.5rem;">
+                        📄 Ver Comprobante
+                    </a>
+                <?php else: ?>
+                    <?php if (\App\Helpers\AuthHelper::isAdmin()): ?>
+                        <a href="<?php echo BASE_URL; ?>/ordenes/liquidar/<?php echo $ot['id']; ?>" class="btn btn-primary" style="width: 100%; justify-content: center; background-color: #10b981; border-color: #10b981;" onclick="return confirm('¿Está seguro de liquidar y cerrar esta Orden de Trabajo?');">
+                            💰 Liquidar OT (Cerrar)
+                        </a>
+                    <?php else: ?>
+                        <div style="text-align: center; color: var(--danger); font-size: 0.85rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 4px;">
+                            Solo un Administrador puede liquidar la OT.
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
