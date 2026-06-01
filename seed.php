@@ -71,7 +71,13 @@ try {
     ];
     
     foreach ($tables as $table) {
-        $pdo->exec("TRUNCATE TABLE `$table`;");
+        $pdo->exec("DELETE FROM `$table`;");
+        // Reiniciar contador de auto-incremento (si aplica)
+        try {
+            $pdo->exec("ALTER TABLE `$table` AUTO_INCREMENT = 1;");
+        } catch (\PDOException $e) {
+            // Ignorar si la tabla no tiene columna AUTO_INCREMENT (como trabajador_especialidades)
+        }
     }
     echo "Tablas limpiadas con éxito.\n\n";
     

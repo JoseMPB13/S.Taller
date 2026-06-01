@@ -9,19 +9,32 @@ USE taller_mecanico;
 -- Desactivar temporalmente la revisión de llaves foráneas para limpieza
 SET FOREIGN_KEY_CHECKS = 0;
 
-TRUNCATE TABLE auditoria_accesos;
-TRUNCATE TABLE ot_servicios;
-TRUNCATE TABLE ot_repuestos;
-TRUNCATE TABLE ot_mecanicos;
-TRUNCATE TABLE ordenes_trabajo;
-TRUNCATE TABLE trabajador_especialidades;
-TRUNCATE TABLE trabajadores;
-TRUNCATE TABLE autos;
-TRUNCATE TABLE clientes;
-TRUNCATE TABLE inventario;
-TRUNCATE TABLE servicios;
-TRUNCATE TABLE usuarios;
-TRUNCATE TABLE roles;
+DELETE FROM auditoria_accesos;
+DELETE FROM ot_servicios;
+DELETE FROM ot_repuestos;
+DELETE FROM ot_mecanicos;
+DELETE FROM ordenes_trabajo;
+DELETE FROM trabajador_especialidades;
+DELETE FROM trabajadores;
+DELETE FROM autos;
+DELETE FROM clientes;
+DELETE FROM inventario;
+DELETE FROM servicios;
+DELETE FROM usuarios;
+DELETE FROM roles;
+
+ALTER TABLE auditoria_accesos AUTO_INCREMENT = 1;
+ALTER TABLE ot_servicios AUTO_INCREMENT = 1;
+ALTER TABLE ot_repuestos AUTO_INCREMENT = 1;
+ALTER TABLE ot_mecanicos AUTO_INCREMENT = 1;
+ALTER TABLE ordenes_trabajo AUTO_INCREMENT = 1;
+ALTER TABLE trabajadores AUTO_INCREMENT = 1;
+ALTER TABLE autos AUTO_INCREMENT = 1;
+ALTER TABLE clientes AUTO_INCREMENT = 1;
+ALTER TABLE inventario AUTO_INCREMENT = 1;
+ALTER TABLE servicios AUTO_INCREMENT = 1;
+ALTER TABLE usuarios AUTO_INCREMENT = 1;
+ALTER TABLE roles AUTO_INCREMENT = 1;
 
 -- Reactivar la revisión de llaves foráneas
 SET FOREIGN_KEY_CHECKS = 1;
