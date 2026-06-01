@@ -41,6 +41,7 @@
                 <option value="terminado" <?php echo (($_GET['estado'] ?? '') === 'terminado') ? 'selected' : ''; ?>>Terminado</option>
                 <option value="entregado" <?php echo (($_GET['estado'] ?? '') === 'entregado') ? 'selected' : ''; ?>>Entregado</option>
                 <option value="cerrado" <?php echo (($_GET['estado'] ?? '') === 'cerrado') ? 'selected' : ''; ?>>Cerrado</option>
+                <option value="pagada" <?php echo (($_GET['estado'] ?? '') === 'pagada') ? 'selected' : ''; ?>>Pagada</option>
             </select>
         </div>
         <button type="submit" class="btn btn-primary" style="margin: 0;">
@@ -114,9 +115,9 @@
                             <td>
                                 <?php 
                                     $eClass = 'badge-secondary';
-                                    if (in_array($ot['estado'], ['terminado', 'entregado', 'cerrado'])) $eClass = 'badge-success';
+                                    if (in_array($ot['estado'], ['terminado', 'entregado', 'cerrado', 'pagada'])) $eClass = 'badge-success';
                                     if ($ot['estado'] === 'anulado') $eClass = 'badge-danger';
-                                    if (in_array($ot['estado'], ['en_diagnostico', 'en_progreso'])) $eClass = 'badge-primary'; // Could be different color
+                                    if (in_array($ot['estado'], ['en_diagnostico', 'en_progreso'])) $eClass = 'badge-primary';
                                 ?>
                                 <span class="badge <?php echo $eClass; ?>" style="text-transform: uppercase; font-size: 0.75rem;">
                                     <?php echo htmlspecialchars(str_replace('_', ' ', $ot['estado'])); ?>
@@ -134,10 +135,15 @@
                                             <option value="terminado">Terminado</option>
                                             <option value="entregado">Entregado</option>
                                             <option value="cerrado">Cerrado</option>
+                                            <option value="pagada">Pagada (Facturar)</option>
                                             <option value="anulado">Anulado</option>
                                         </select>
                                     </form>
                                     <a href="<?php echo BASE_URL; ?>/ordenes/detalles/<?php echo $ot['id']; ?>" class="btn btn-secondary btn-sm" title="Ver Detalles Operativos">Ver</a>
+                                    <a href="<?php echo BASE_URL; ?>/ordenes/descargar_pdf/<?php echo $ot['id']; ?>" class="btn btn-secondary btn-sm" title="Descargar Reporte OT (PDF)">PDF OT</a>
+                                    <?php if ($ot['estado'] === 'pagada'): ?>
+                                        <a href="<?php echo BASE_URL; ?>/ordenes/descargar_factura/<?php echo $ot['id']; ?>" class="btn btn-primary btn-sm" style="background-color: #10b981; border-color: #10b981;" title="Descargar Factura (PDF)">Factura</a>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>

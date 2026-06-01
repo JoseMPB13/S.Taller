@@ -144,6 +144,9 @@ class WorkOrderController {
 
         if ($this->workOrderModel->updateStatus($id, $nuevo_estado)) {
             $_SESSION['success'] = "Estado de la OT actualizado correctamente a '" . htmlspecialchars($nuevo_estado) . "'.";
+            if ($nuevo_estado === 'pagada') {
+                $this->generar_factura_pdf($id, true);
+            }
         } else {
             $_SESSION['error'] = "Ocurrió un error al actualizar el estado.";
         }
@@ -384,5 +387,318 @@ class WorkOrderController {
         $total_general = $base_total; // El total a pagar incluye la mano de obra
 
         require_once ROOT_PATH . '/app/views/workorders/comprobante.php';
+    }
+
+    /**
+     * Genera dinámicamente el reporte de la Orden de Trabajo en PDF.
+     */
+    public function descargar_pdf($id) {
+        $id = (int)$id;
+        $this->generar_ot_pdf($id, true);
+    }
+
+    /**
+     * Descarga la factura física o la genera si la orden está pagada.
+     */
+    public function descargar_factura($id) {
+        $id = (int)$id;
+        $ot = $this->workOrderModel->getById($id);
+        
+        if (!$ot) {
+            $_SESSION['error'] = "Orden de Trabajo no encontrada.";
+            header('Location: ' . BASE_URL . '/ordenes');
+            exit();
+        }
+
+        $filePath = ROOT_PATH . '/public/invoices/FAC-' . $id . '.pdf';
+
+        if (file_exists($filePath)) {
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="FAC-' . $ot['codigo'] . '.pdf"');
+            header('Content-Length: ' . filesize($filePath));
+            readfile($filePath);
+            exit();
+        } else {
+            if ($ot['estado'] === 'pagada') {
+                $this->generar_factura_pdf($id, true);
+            } else {
+                $_SESSION['error'] = "La factura no está disponible porque la orden no ha sido pagada.";
+                header('Location: ' . BASE_URL . '/ordenes/detalles/' . $id);
+                exit();
+            }
+        }
+    }
+
+    /**
+     * Genera, guarda en servidor y opcionalmente descarga la factura en PDF.
+     */
+    private function generar_factura_pdf(int $id, bool $descargar = true) {
+        $ot = $this->workOrderModel->getById($id);
+        if (!$ot) {
+            $_SESSION['error'] = "Orden de Trabajo no encontrada.";
+            header('Location: ' . BASE_URL . '/ordenes');
+            exit();
+        }
+
+        $repuestos = $this->detailModel->getParts($id);
+        $servicios = $this->detailModel->getServices($id);
+        $cliente = $this->clientModel->getById($ot['cliente_id']);
+
+        // Decodificar JSON de facturación
+        $datos_facturacion = null;
+        if (!empty($cliente['datos_facturacion'])) {
+            $datos_facturacion = json_decode($cliente['datos_facturacion'], true);
+        }
+        
+        $razon_social = $datos_facturacion['razon_social'] ?? 'Sin Nombre';
+        $nit_ci = $datos_facturacion['nit_ci'] ?? '0';
+
+        if (empty(trim($razon_social))) { $razon_social = 'Sin Nombre'; }
+        if (empty(trim($nit_ci))) { $nit_ci = '0'; }
+
+        // Crear instancia del helper PDF
+        $pdf = new \App\Helpers\PdfReportHelper();
+        $pdf->documentTitle = 'FACTURA DE VENTA';
+        $pdf->documentSubTitle = 'No. FAC-' . $ot['codigo'];
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        // Sección: Datos del Cliente
+        $pdf->renderSectionHeader('DATOS DE FACTURACIÓN Y CLIENTE');
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Cell(95, 5, utf8_decode('Razón Social: ' . $razon_social), 0, 0);
+        $pdf->Cell(95, 5, utf8_decode('NIT / CI: ' . $nit_ci), 0, 1);
+        $pdf->Cell(95, 5, utf8_decode('Cliente Registrado: ' . $ot['cliente_nombres'] . ' ' . $ot['cliente_apellidos']), 0, 0);
+        $pdf->Cell(95, 5, utf8_decode('Fecha Emisión: ' . date('d/m/Y')), 0, 1);
+        $pdf->Ln(4);
+
+        // Sección: Datos del Vehículo
+        $pdf->renderSectionHeader('DETALLES DEL VEHÍCULO');
+        $pdf->Cell(95, 5, utf8_decode('Marca/Modelo: ' . $ot['auto_marca'] . ' ' . $ot['auto_modelo']), 0, 0);
+        $pdf->Cell(95, 5, utf8_decode('Placa: ' . $ot['auto_placa']), 0, 1);
+        $pdf->Ln(4);
+
+        // Sección: Repuestos
+        $pdf->renderSectionHeader('1. REPUESTOS E INSUMOS CONSUMIDOS');
+        $headerRep = ['Cant', 'Descripción', 'P. Unitario (BOB)', 'Subtotal (BOB)'];
+        $dataRep = [];
+        $totalRepuestos = 0.0;
+        foreach ($repuestos as $rp) {
+            $sub = $rp['cantidad'] * $rp['precio_unitario'];
+            $totalRepuestos += $sub;
+            $dataRep[] = [
+                $rp['cantidad'],
+                $rp['codigo_sku'] . ' - ' . $rp['repuesto_nombre'],
+                number_format($rp['precio_unitario'], 2, ',', '.'),
+                number_format($sub, 2, ',', '.')
+            ];
+        }
+        if (empty($dataRep)) {
+            $dataRep[] = ['-', 'No se registraron repuestos consumidos', '-', '0,00'];
+        }
+        $pdf->renderTable($headerRep, $dataRep, [15, 100, 35, 40], ['C', 'L', 'R', 'R']);
+
+        // Sección: Servicios
+        $pdf->renderSectionHeader('2. SERVICIOS Y TAREAS REALIZADAS');
+        $headerSer = ['Descripción del Servicio', 'Precio (BOB)', 'Descuento (BOB)', 'Subtotal (BOB)'];
+        $dataSer = [];
+        $totalServicios = 0.0;
+        foreach ($servicios as $sv) {
+            $sub = $sv['precio_aplicado'] - $sv['descuento_aplicado'];
+            $totalServicios += $sub;
+            $dataSer[] = [
+                $sv['nombre_servicio'],
+                number_format($sv['precio_aplicado'], 2, ',', '.'),
+                number_format($sv['descuento_aplicado'], 2, ',', '.'),
+                number_format($sub, 2, ',', '.')
+            ];
+        }
+        if (empty($dataSer)) {
+            $dataSer[] = ['No se aplicaron servicios', '-', '-', '0,00'];
+        }
+        $pdf->renderTable($headerSer, $dataSer, [100, 30, 30, 30], ['L', 'R', 'R', 'R']);
+
+        // Cálculos e impuestos
+        $costo_mano_obra = (float)($ot['costo_mano_obra'] ?? 0.0);
+        $subtotal = $totalRepuestos + $totalServicios;
+        $total_general = $subtotal + $costo_mano_obra;
+
+        $tasa_iva = 0.13;
+        $monto_iva = $total_general * $tasa_iva;
+        $subtotal_sin_iva = $total_general - $monto_iva;
+
+        // Desglose de totales
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->SetTextColor(51, 65, 85);
+        $pdf->Cell(130, 6, 'SUBTOTAL REPUESTOS Y SERVICIOS:', 0, 0, 'R');
+        $pdf->Cell(60, 6, number_format($subtotal, 2, ',', '.') . ' BOB', 0, 1, 'R');
+        
+        $pdf->Cell(130, 6, 'MANO DE OBRA (MANUAL):', 0, 0, 'R');
+        $pdf->Cell(60, 6, number_format($costo_mano_obra, 2, ',', '.') . ' BOB', 0, 1, 'R');
+
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->SetTextColor(100, 116, 139);
+        $pdf->Cell(130, 5, utf8_decode('(Subtotal Neto Sin IVA):'), 0, 0, 'R');
+        $pdf->Cell(60, 5, number_format($subtotal_sin_iva, 2, ',', '.') . ' BOB', 0, 1, 'R');
+        
+        $pdf->Cell(130, 5, utf8_decode('(IVA 13% Incluido):'), 0, 0, 'R');
+        $pdf->Cell(60, 5, number_format($monto_iva, 2, ',', '.') . ' BOB', 0, 1, 'R');
+
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->SetTextColor(16, 185, 129); // Color verde acento
+        $pdf->Cell(130, 7, 'TOTAL A PAGAR:', 'T', 0, 'R');
+        $pdf->Cell(60, 7, number_format($total_general, 2, ',', '.') . ' BOB', 'T', 1, 'R');
+
+        // Firmas
+        $pdf->Ln(15);
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->SetTextColor(100, 116, 139);
+        $y = $pdf->GetY();
+        $pdf->Line(20, $y + 10, 80, $y + 10);
+        $pdf->Line(110, $y + 10, 170, $y + 10);
+        $pdf->SetY($y + 11);
+        $pdf->Cell(95, 5, utf8_decode('Conformidad del Cliente (' . ($nit_ci !== '0' ? $nit_ci : 'CI/NIT') . ')'), 0, 0, 'C');
+        $pdf->Cell(95, 5, utf8_decode('Autorizado Taller S.Taller'), 0, 1, 'C');
+
+        // Directorio físico de guardado
+        $invoicesDir = ROOT_PATH . '/public/invoices';
+        if (!file_exists($invoicesDir)) {
+            mkdir($invoicesDir, 0777, true);
+        }
+        
+        $filePath = $invoicesDir . '/FAC-' . $id . '.pdf';
+        
+        // Guardar archivo físico en el servidor
+        $pdf->Output('F', $filePath);
+
+        if ($descargar) {
+            $pdf->Output('D', 'FAC-' . $ot['codigo'] . '.pdf');
+            exit();
+        }
+    }
+
+    /**
+     * Genera dinámicamente y descarga el reporte PDF de la OT.
+     */
+    private function generar_ot_pdf(int $id, bool $descargar = true) {
+        $ot = $this->workOrderModel->getById($id);
+        if (!$ot) {
+            $_SESSION['error'] = "Orden de Trabajo no encontrada.";
+            header('Location: ' . BASE_URL . '/ordenes');
+            exit();
+        }
+
+        $repuestos = $this->detailModel->getParts($id);
+        $servicios = $this->detailModel->getServices($id);
+        $mecanicos = $this->detailModel->getMechanics($id);
+
+        $pdf = new \App\Helpers\PdfReportHelper();
+        $pdf->documentTitle = 'REPORTE DE ORDEN DE TRABAJO';
+        $pdf->documentSubTitle = 'COD: ' . $ot['codigo'];
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        // Sección: Información General
+        $pdf->renderSectionHeader('INFORMACIÓN GENERAL DE LA ORDEN');
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Cell(95, 5, utf8_decode('Cliente: ' . $ot['cliente_nombres'] . ' ' . $ot['cliente_apellidos']), 0, 0);
+        $pdf->Cell(95, 5, utf8_decode('Prioridad: ' . ucfirst($ot['prioridad'])), 0, 1);
+        $pdf->Cell(95, 5, utf8_decode('Fecha Ingreso: ' . date('d/m/Y', strtotime($ot['fecha_ingreso']))), 0, 0);
+        $pdf->Cell(95, 5, utf8_decode('Estado actual: ' . strtoupper(str_replace('_', ' ', $ot['estado']))), 0, 1);
+        $pdf->Ln(4);
+
+        // Sección: Datos del Vehículo
+        $pdf->renderSectionHeader('DATOS DEL VEHÍCULO');
+        $pdf->Cell(95, 5, utf8_decode('Placa: ' . $ot['auto_placa']), 0, 0);
+        $pdf->Cell(95, 5, utf8_decode('Marca / Modelo: ' . $ot['auto_marca'] . ' ' . $ot['auto_modelo']), 0, 1);
+        $pdf->Ln(4);
+
+        // Sección: Diagnóstico
+        $pdf->renderSectionHeader('DIAGNÓSTICO Y FALLAS REPORTADAS');
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->MultiCell(0, 5, utf8_decode('Falla Reportada: ' . $ot['falla_reportada']), 0, 'L');
+        if (!empty($ot['observaciones'])) {
+            $pdf->MultiCell(0, 5, utf8_decode('Observaciones adicionales: ' . $ot['observaciones']), 0, 'L');
+        }
+        $pdf->Ln(4);
+
+        // Sección: Mecánicos
+        $pdf->renderSectionHeader('MECÁNICOS ASIGNADOS');
+        $thisMecanicos = [];
+        foreach ($mecanicos as $mec) {
+            $thisMecanicos[] = $mec['nombres'] . ' ' . $mec['apellidos'];
+        }
+        $pdf->SetFont('Arial', '', 9);
+        if (empty($thisMecanicos)) {
+            $pdf->Cell(0, 5, utf8_decode('Sin mecánicos asignados.'), 0, 1);
+        } else {
+            $pdf->Cell(0, 5, utf8_decode(implode(', ', $thisMecanicos)), 0, 1);
+        }
+        $pdf->Ln(4);
+
+        // Sección: Repuestos
+        $pdf->renderSectionHeader('1. REPUESTOS E INSUMOS CONSUMIDOS');
+        $headerRep = ['Cant', 'Descripción', 'Precio (BOB)', 'Subtotal (BOB)'];
+        $dataRep = [];
+        $totalRepuestos = 0.0;
+        foreach ($repuestos as $rp) {
+            $sub = $rp['cantidad'] * $rp['precio_unitario'];
+            $totalRepuestos += $sub;
+            $dataRep[] = [
+                $rp['cantidad'],
+                $rp['codigo_sku'] . ' - ' . $rp['repuesto_nombre'],
+                number_format($rp['precio_unitario'], 2, ',', '.'),
+                number_format($sub, 2, ',', '.')
+            ];
+        }
+        if (empty($dataRep)) {
+            $dataRep[] = ['-', 'No se registraron repuestos', '-', '0,00'];
+        }
+        $pdf->renderTable($headerRep, $dataRep, [15, 100, 35, 40], ['C', 'L', 'R', 'R']);
+
+        // Sección: Servicios
+        $pdf->renderSectionHeader('2. SERVICIOS Y TAREAS REALIZADAS');
+        $headerSer = ['Descripción del Servicio', 'Precio (BOB)', 'Descuento (BOB)', 'Subtotal (BOB)'];
+        $dataSer = [];
+        $totalServicios = 0.0;
+        foreach ($servicios as $sv) {
+            $sub = $sv['precio_aplicado'] - $sv['descuento_aplicado'];
+            $totalServicios += $sub;
+            $dataSer[] = [
+                $sv['nombre_servicio'],
+                number_format($sv['precio_aplicado'], 2, ',', '.'),
+                number_format($sv['descuento_aplicado'], 2, ',', '.'),
+                number_format($sub, 2, ',', '.')
+            ];
+        }
+        if (empty($dataSer)) {
+            $dataSer[] = ['No se aplicaron servicios', '-', '-', '0,00'];
+        }
+        $pdf->renderTable($headerSer, $dataSer, [100, 30, 30, 30], ['L', 'R', 'R', 'R']);
+
+        // Desglose final
+        $costo_mano_obra = (float)($ot['costo_mano_obra'] ?? 0.0);
+        $subtotal = $totalRepuestos + $totalServicios;
+        $total_general = $subtotal + $costo_mano_obra;
+
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->SetTextColor(51, 65, 85);
+        $pdf->Cell(130, 6, 'SUBTOTAL REPUESTOS Y SERVICIOS:', 0, 0, 'R');
+        $pdf->Cell(60, 6, number_format($subtotal, 2, ',', '.') . ' BOB', 0, 1, 'R');
+        
+        $pdf->Cell(130, 6, 'MANO DE OBRA (MANUAL):', 0, 0, 'R');
+        $pdf->Cell(60, 6, number_format($costo_mano_obra, 2, ',', '.') . ' BOB', 0, 1, 'R');
+
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->SetTextColor(30, 41, 59);
+        $pdf->Cell(130, 7, 'TOTAL GENERAL ESTIMADO:', 'T', 0, 'R');
+        $pdf->Cell(60, 7, number_format($total_general, 2, ',', '.') . ' BOB', 'T', 1, 'R');
+
+        if ($descargar) {
+            $pdf->Output('D', 'OT-' . $ot['codigo'] . '.pdf');
+            exit();
+        }
     }
 }

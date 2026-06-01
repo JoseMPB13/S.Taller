@@ -241,12 +241,24 @@
                 <div style="font-size: 0.9rem; color: var(--text-muted);">Bolivianos (BOB)</div>
             </div>
 
-            <div style="margin-top: 1.5rem;">
+            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <!-- Botón permanente para descargar reporte de OT -->
+                <a href="<?php echo BASE_URL; ?>/ordenes/descargar_pdf/<?php echo $ot['id']; ?>" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                    📄 Descargar Reporte OT (PDF)
+                </a>
+
+                <?php if ($ot['estado'] === 'pagada'): ?>
+                    <!-- Botón destacado si está pagada -->
+                    <a href="<?php echo BASE_URL; ?>/ordenes/descargar_factura/<?php echo $ot['id']; ?>" class="btn btn-primary" style="width: 100%; justify-content: center; background-color: #10b981; border-color: #10b981;">
+                        💰 Descargar Factura (PDF)
+                    </a>
+                <?php endif; ?>
+
                 <?php if ($ot['estado'] === 'cerrado' || $ot['estado'] === 'liquidada'): ?>
-                    <a href="<?php echo BASE_URL; ?>/ordenes/comprobante/<?php echo $ot['id']; ?>" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-bottom: 0.5rem;">
+                    <a href="<?php echo BASE_URL; ?>/ordenes/comprobante/<?php echo $ot['id']; ?>" class="btn btn-secondary" style="width: 100%; justify-content: center;">
                         📄 Ver Comprobante
                     </a>
-                <?php else: ?>
+                <?php elseif ($ot['estado'] !== 'pagada'): ?>
                     <?php if (\App\Helpers\AuthHelper::isAdmin()): ?>
                         <a href="<?php echo BASE_URL; ?>/ordenes/liquidar/<?php echo $ot['id']; ?>" class="btn btn-primary" style="width: 100%; justify-content: center; background-color: #10b981; border-color: #10b981;" onclick="return confirm('¿Está seguro de liquidar y cerrar esta Orden de Trabajo?');">
                             💰 Liquidar OT (Cerrar)
