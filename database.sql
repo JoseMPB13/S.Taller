@@ -59,16 +59,23 @@ CREATE TABLE IF NOT EXISTS trabajadores (
     nombres VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
     documento VARCHAR(20) UNIQUE NOT NULL,
-    especialidades TEXT NOT NULL,
     nivel ENUM('Junior', 'Semi-Senior', 'Senior', 'Master') DEFAULT 'Junior',
     contacto VARCHAR(100) NULL,
     disponibilidad ENUM('disponible', 'ocupado', 'ausente') DEFAULT 'disponible',
-    costo_hora DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at DATETIME NULL
 ) ENGINE=InnoDB;
+
+-- 4.1 Especialidades de los Trabajadores (Normalización 1NF para RF-003)
+CREATE TABLE IF NOT EXISTS trabajador_especialidades (
+    trabajador_id INT NOT NULL,
+    especialidad VARCHAR(100) NOT NULL,
+    PRIMARY KEY (trabajador_id, especialidad),
+    FOREIGN KEY (trabajador_id) REFERENCES trabajadores(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 
 -- 5. Autos (RF-004, RF-011)
 CREATE TABLE IF NOT EXISTS autos (
@@ -97,11 +104,12 @@ CREATE TABLE IF NOT EXISTS ordenes_trabajo (
     auto_id INT NOT NULL,
     fecha_ingreso DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     falla_reportada TEXT NOT NULL,
-    estado ENUM('pendiente', 'en_diagnostico', 'presupuestado', 'en_progreso', 'terminado', 'entregado', 'anulado', 'cerrado') DEFAULT 'pendiente',
+    estado ENUM('pendiente', 'en_diagnostico', 'presupuestado', 'en_progreso', 'terminado', 'entregado', 'anulado', 'cerrado', 'pagada') DEFAULT 'pendiente',
     prioridad ENUM('baja', 'media', 'alta') DEFAULT 'media',
     diagnosticos TEXT NULL,
     trabajos TEXT NULL,
     observaciones TEXT NULL,
+    costo_mano_obra DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     fecha_cierre DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -200,6 +208,3 @@ CREATE TABLE IF NOT EXISTS auditoria_accesos (
 
 -- Índices optimizados para búsquedas avanzadas (RF-009) y relaciones
 CREATE INDEX idx_clientes_busqueda ON clientes (nombres, apellidos, documento);
-CREATE INDEX idx_autos_placa ON autos (placa);
-CREATE INDEX idx_ordenes_codigo ON ordenes_trabajo (codigo);
-CREATE INDEX idx_inventario_sku ON inventario (codigo_sku);

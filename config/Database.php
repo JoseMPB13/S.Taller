@@ -24,11 +24,13 @@ class Database {
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false, // Sentencias preparadas nativas para seguridad contra SQL Injection
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4", // Forzar codificación UTF-8 en la comunicación con MySQL
         ];
 
         try {
             $this->connection = new PDO($dsn, $dbConfig['user'], $dbConfig['pass'], $options);
         } catch (PDOException $e) {
+
             throw new Exception("Error de conexión a la base de datos: " . $e->getMessage());
         }
     }
