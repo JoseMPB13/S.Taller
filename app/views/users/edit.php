@@ -87,11 +87,11 @@
             <input class="form-control" type="password" name="confirmar_contrasena" id="confirmar_contrasena" placeholder="Repita la nueva contraseña">
         </div>
 
-        <div style="display: flex; gap: 1.5rem; margin-top: 2.5rem;">
-            <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
                 Guardar Cambios
             </button>
-            <a href="<?php echo BASE_URL; ?>/usuarios" class="btn btn-secondary" style="flex: 1; justify-content: center;">
+            <a href="<?php echo BASE_URL; ?>/usuarios" class="btn btn-secondary">
                 Cancelar
             </a>
         </div>

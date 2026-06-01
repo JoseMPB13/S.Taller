@@ -123,11 +123,11 @@ $proveedorVal = $isEdit ? $item['proveedor'] : ($formData['proveedor'] ?? '');
             </div>
         <?php endif; ?>
 
-        <div style="display: flex; gap: 1.5rem; margin-top: 2.5rem;">
-            <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 0.8rem; font-size: 1rem;">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
                 Guardar Artículo
             </button>
-            <a href="<?php echo BASE_URL; ?>/inventario" class="btn btn-secondary" style="flex: 1; justify-content: center; padding: 0.8rem; font-size: 1rem;">
+            <a href="<?php echo BASE_URL; ?>/inventario" class="btn btn-secondary">
                 Cancelar
             </a>
         </div>

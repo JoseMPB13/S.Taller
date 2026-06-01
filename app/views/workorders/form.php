@@ -101,11 +101,11 @@ $autosJson = json_encode($autosPorCliente);
             <textarea class="form-control" name="observaciones" id="observaciones" rows="2" placeholder="Ej. Rayón en puerta derecha, no trae rueda de repuesto..."><?php echo htmlspecialchars($formData['observaciones'] ?? ''); ?></textarea>
         </div>
 
-        <div style="display: flex; gap: 1.5rem; margin-top: 2.5rem;">
-            <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 0.8rem; font-size: 1rem;">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
                 Generar Orden de Trabajo
             </button>
-            <a href="<?php echo BASE_URL; ?>/ordenes" class="btn btn-secondary" style="flex: 1; justify-content: center; padding: 0.8rem; font-size: 1rem;">
+            <a href="<?php echo BASE_URL; ?>/ordenes" class="btn btn-secondary">
                 Cancelar
             </a>
         </div>

@@ -132,9 +132,9 @@
     }
 </style>
 
-<div style="margin-bottom: 1rem; text-align: right;">
-    <button onclick="window.print()" class="btn btn-primary" style="margin-right: 1rem;">🖨️ Imprimir Comprobante</button>
-    <a href="<?php echo BASE_URL; ?>/ordenes/descargar_pdf/<?php echo $ot['id']; ?>" class="btn-custom-download" style="margin-right: 1rem;">📄 Descargar PDF</a>
+<div class="comprobante-actions">
+    <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimir Comprobante</button>
+    <a href="<?php echo BASE_URL; ?>/ordenes/descargar_pdf/<?php echo $ot['id']; ?>" class="btn-custom-download">📄 Descargar PDF</a>
     <a href="<?php echo BASE_URL; ?>/ordenes/detalles/<?php echo $ot['id']; ?>" class="btn btn-secondary">Volver a la OT</a>
 </div>
 
@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <div style="display: flex; gap: 2rem;" class="comp-section">
+    <div class="comp-section comp-info-grid">
         <div style="flex: 1;">
             <h4>Datos del Cliente</h4>
             <div><strong>Nombre:</strong> <?php echo htmlspecialchars($ot['cliente_nombres'] . ' ' . $ot['cliente_apellidos']); ?></div>
@@ -170,7 +170,8 @@
 
     <div class="comp-section">
         <h4>1. Repuestos e Insumos</h4>
-        <table class="comp-table">
+        <div class="table-responsive">
+            <table class="comp-table">
             <thead>
                 <tr>
                     <th>Cant.</th>
@@ -194,37 +195,40 @@
                 <?php endif; ?>
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="comp-section">
         <h4>2. Servicios y Mano de Obra</h4>
-        <table class="comp-table">
-            <thead>
-                <tr>
-                    <th>Descripción</th>
-                    <th class="text-right">Precio (BOB)</th>
-                    <th class="text-right">Descuento (BOB)</th>
-                    <th class="text-right">Subtotal (BOB)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($servicios)): ?>
-                    <tr><td colspan="4" style="text-align: center;">No se registraron servicios.</td></tr>
-                <?php else: ?>
-                    <?php foreach ($servicios as $sv): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($sv['nombre_servicio']); ?></td>
-                            <td class="text-right"><?php echo number_format($sv['precio_aplicado'], 2, ',', '.'); ?></td>
-                            <td class="text-right"><?php echo number_format($sv['descuento_aplicado'], 2, ',', '.'); ?></td>
-                            <td class="text-right"><?php echo number_format($sv['precio_aplicado'] - $sv['descuento_aplicado'], 2, ',', '.'); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th>Descripción</th>
+                        <th class="text-right">Precio (BOB)</th>
+                        <th class="text-right">Descuento (BOB)</th>
+                        <th class="text-right">Subtotal (BOB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($servicios)): ?>
+                        <tr><td colspan="4" style="text-align: center;">No se registraron servicios.</td></tr>
+                    <?php else: ?>
+                        <?php foreach ($servicios as $sv): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($sv['nombre_servicio']); ?></td>
+                                <td class="text-right"><?php echo number_format($sv['precio_aplicado'], 2, ',', '.'); ?></td>
+                                <td class="text-right"><?php echo number_format($sv['descuento_aplicado'], 2, ',', '.'); ?></td>
+                                <td class="text-right"><?php echo number_format($sv['precio_aplicado'] - $sv['descuento_aplicado'], 2, ',', '.'); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="comp-totals">
+    <div class="comp-totals-responsive">
         <table class="comp-table" style="border: none;">
             <tr>
                 <td style="border: none; text-align: right; font-weight: bold;">SUBTOTAL:</td>
@@ -249,7 +253,7 @@
         </table>
     </div>
 
-    <div class="comp-signatures">
+    <div class="comp-signatures-responsive">
         <div>
             <div class="signature-line">Conformidad del Cliente</div>
             <div style="font-size: 0.8rem; margin-top: 0.2rem;"><?php echo htmlspecialchars($ot['cliente_documento'] ?? ''); ?></div>

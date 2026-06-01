@@ -35,16 +35,16 @@ if (empty($currentRoute)) {
             </ul>
 
             <?php if (\App\Helpers\AuthHelper::isLoggedIn()): ?>
-                <div style="display: flex; align-items: center; gap: 1.5rem;">
-                    <div style="text-align: right;">
-                        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">
+                <div class="user-nav-profile">
+                    <div class="user-nav-info">
+                        <div class="user-nav-name">
                             <?php echo htmlspecialchars($_SESSION['user_nombre']); ?>
                         </div>
-                        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 500; text-transform: uppercase;">
+                        <div class="user-nav-role">
                             <?php echo htmlspecialchars($_SESSION['user_rol']); ?>
                         </div>
                     </div>
-                    <a href="<?php echo BASE_URL; ?>/logout" class="btn btn-secondary btn-sm" style="border-color: var(--danger); color: #f87171; font-weight: 600;">
+                    <a href="<?php echo BASE_URL; ?>/logout" class="btn btn-logout btn-sm">
                         Cerrar Sesión
                     </a>
                 </div>
