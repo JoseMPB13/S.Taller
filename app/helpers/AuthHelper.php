@@ -68,7 +68,23 @@ class AuthHelper {
      */
     public static function isLoggedIn(): bool {
         self::initSession();
-        return isset($_SESSION['user_id']);
+        if (!isset($_SESSION['user_id'])) {
+            return false;
+        }
+
+        try {
+            $db = \Config\Database::getInstance()->getConnection();
+            $stmt = $db->prepare("SELECT id FROM usuarios WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            if ($stmt->rowCount() === 0) {
+                self::destroySession();
+                return false;
+            }
+        } catch (\Exception $e) {
+            // En caso de fallo de conexión temporal, retornar true si existe sesión local
+        }
+
+        return true;
     }
 
     /**

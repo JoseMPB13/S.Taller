@@ -107,6 +107,7 @@
 
 <div style="margin-bottom: 1rem; text-align: right;">
     <button onclick="window.print()" class="btn btn-primary" style="margin-right: 1rem;">🖨️ Imprimir Comprobante</button>
+    <a href="<?php echo BASE_URL; ?>/ordenes/descargar_pdf/<?php echo $ot['id']; ?>" class="btn btn-success" style="margin-right: 1rem;">📄 Descargar PDF</a>
     <a href="<?php echo BASE_URL; ?>/ordenes/detalles/<?php echo $ot['id']; ?>" class="btn btn-secondary">Volver a la OT</a>
 </div>
 
