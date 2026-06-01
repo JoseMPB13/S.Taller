@@ -134,7 +134,7 @@ class WorkOrderController {
         $id = (int)$id;
         $nuevo_estado = $_POST['estado'] ?? '';
 
-        $estados_validos = ['pendiente', 'en_diagnostico', 'presupuestado', 'en_progreso', 'terminado', 'entregado', 'anulado', 'cerrado'];
+        $estados_validos = ['pendiente', 'en_diagnostico', 'presupuestado', 'en_progreso', 'terminado', 'entregado', 'anulado', 'cerrado', 'pagada'];
         
         if (!in_array($nuevo_estado, $estados_validos)) {
             $_SESSION['error'] = "Estado no válido.";
@@ -149,6 +149,42 @@ class WorkOrderController {
         }
 
         header('Location: ' . BASE_URL . '/ordenes');
+        exit();
+    }
+
+    /**
+     * Actualiza manualmente el costo de mano de obra de la Orden de Trabajo.
+     */
+    public function actualizar_mano_obra($id) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $id);
+            exit();
+        }
+
+        $id = (int)$id;
+
+        // Validar CSRF
+        if (!AuthHelper::validateCsrf($_POST['csrf_token'] ?? null)) {
+            $_SESSION['error'] = "Falsificación de petición detectada (Token CSRF inválido).";
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $id);
+            exit();
+        }
+
+        $costo_mano_obra = (float)($_POST['costo_mano_obra'] ?? 0.0);
+
+        if ($costo_mano_obra < 0) {
+            $_SESSION['error'] = "El costo de mano de obra no puede ser un valor negativo.";
+            header('Location: ' . BASE_URL . '/ordenes/detalles/' . $id);
+            exit();
+        }
+
+        if ($this->workOrderModel->updateLaborCost($id, $costo_mano_obra)) {
+            $_SESSION['success'] = "Costo de Mano de Obra actualizado exitosamente.";
+        } else {
+            $_SESSION['error'] = "Ocurrió un error al actualizar el Costo de Mano de Obra.";
+        }
+
+        header('Location: ' . BASE_URL . '/ordenes/detalles/' . $id);
         exit();
     }
 
@@ -337,15 +373,15 @@ class WorkOrderController {
             $total_descuentos += $sv['descuento_aplicado'];
         }
 
+        $costo_mano_obra = (float)($ot['costo_mano_obra'] ?? 0.0);
         $subtotal = $subtotal_repuestos + $subtotal_servicios - $total_descuentos;
         
         // Impuestos (Ej: 13% IVA Bolivia si aplica)
-        // Por simplicidad del modelo, asumimos que los precios ya incluyen IVA,
-        // pero podemos desglosarlo para el recibo.
         $tasa_iva = 0.13;
-        $monto_iva = $subtotal * $tasa_iva;
-        $subtotal_sin_iva = $subtotal - $monto_iva;
-        $total_general = $subtotal; // El total a pagar
+        $base_total = $subtotal + $costo_mano_obra;
+        $monto_iva = $base_total * $tasa_iva;
+        $subtotal_sin_iva = $base_total - $monto_iva;
+        $total_general = $base_total; // El total a pagar incluye la mano de obra
 
         require_once ROOT_PATH . '/app/views/workorders/comprobante.php';
     }

@@ -205,6 +205,23 @@
             </form>
         </div>
 
+        <!-- PANEL: COSTO DE MANO DE OBRA -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2 class="card-title">Costo de Mano de Obra (Manual)</h2>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; text-align: center;">
+                <?php $costo_mano_obra = (float)($ot['costo_mano_obra'] ?? 0.0); ?>
+                <?php echo number_format($costo_mano_obra, 2, ',', '.'); ?> BOB
+            </div>
+            <form action="<?php echo BASE_URL; ?>/ordenes/actualizar_mano_obra/<?php echo $ot['id']; ?>" method="POST" style="background: var(--bg-alt); padding: 1rem; border-radius: 6px;">
+                <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::generateCsrf(); ?>">
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                    <label class="form-label" style="font-size: 0.8rem;" for="costo_mano_obra">Nuevo Costo (BOB)</label>
+                    <input class="form-control" type="number" name="costo_mano_obra" id="costo_mano_obra" step="0.01" min="0" value="<?php echo $costo_mano_obra; ?>" required>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Actualizar Costo</button>
+            </form>
+        </div>
+
         <!-- PANEL: RESUMEN Y ESTADO -->
         <div class="card">
             <h2 class="card-title">Resumen de OT</h2>
@@ -219,7 +236,7 @@
             <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid rgba(16, 185, 129, 0.2);">
                 <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600;">Costo Total Estimado</div>
                 <div style="font-size: 2rem; font-weight: 800; color: #10b981;">
-                    <?php echo number_format($totalServicios + $totalRepuestos, 2, ',', '.'); ?>
+                    <?php echo number_format($totalServicios + $totalRepuestos + $costo_mano_obra, 2, ',', '.'); ?>
                 </div>
                 <div style="font-size: 0.9rem; color: var(--text-muted);">Bolivianos (BOB)</div>
             </div>

@@ -236,6 +236,13 @@ class ClientController {
     public function eliminar($id) {
         $id = (int)$id;
 
+        // Validar método POST y token CSRF
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !\App\Helpers\AuthHelper::validateCsrf($_POST['csrf_token'] ?? null)) {
+            $_SESSION['error'] = "Acción no autorizada (CSRF inválido o método no permitido).";
+            header('Location: ' . BASE_URL . '/clientes');
+            exit();
+        }
+
         if ($this->clientModel->deleteLogically($id)) {
             $_SESSION['success'] = "Cliente desactivado y dado de baja lógicamente del sistema.";
         } else {

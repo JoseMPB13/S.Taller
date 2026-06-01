@@ -105,7 +105,10 @@
                             <td>
                                 <div class="actions">
                                     <a href="<?php echo BASE_URL; ?>/autos/editar/<?php echo $c['id']; ?>" class="btn btn-secondary btn-sm">Editar</a>
-                                    <a href="<?php echo BASE_URL; ?>/autos/eliminar/<?php echo $c['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de desactivar y dar de baja (lógicamente) a este vehículo?')">Eliminar</a>
+                                    <form action="<?php echo BASE_URL; ?>/autos/eliminar/<?php echo $c['id']; ?>" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de desactivar y dar de baja (lógicamente) a este vehículo?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::generateCsrf(); ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

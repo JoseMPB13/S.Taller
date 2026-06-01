@@ -144,7 +144,7 @@ class WorkOrder extends BaseModel {
      * Cuenta el total de órdenes activas (no cerradas ni anuladas).
      */
     public function countActive(): int {
-        $stmt = $this->db->query("SELECT COUNT(*) FROM ordenes_trabajo WHERE estado NOT IN ('cerrado', 'anulado', 'entregado')");
+        $stmt = $this->db->query("SELECT COUNT(*) FROM ordenes_trabajo WHERE estado NOT IN ('cerrado', 'anulado', 'entregado', 'pagada')");
         return (int)$stmt->fetchColumn();
     }
 
@@ -167,25 +167,43 @@ class WorkOrder extends BaseModel {
     }
 
     /**
-     * Obtiene el total recaudado de OTs 'cerrado'.
-     * Suma los repuestos (cantidad * precio) y servicios (precio_aplicado - descuento).
+     * Actualiza manualmente el costo de mano de obra de la Orden de Trabajo.
+     */
+    public function updateLaborCost(int $id, float $costo_mano_obra): bool {
+        $sql = "UPDATE ordenes_trabajo SET costo_mano_obra = :costo_mano_obra WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'costo_mano_obra' => $costo_mano_obra,
+            'id' => $id
+        ]);
+    }
+
+    /**
+     * Obtiene el total recaudado de OTs 'cerrado' y 'pagada'.
+     * Suma repuestos, servicios y el costo de mano de obra manual.
      */
     public function getTotalRevenue(): float {
-        // Query para sumar Repuestos de OTs cerradas
+        // Query para sumar Repuestos de OTs cerradas o pagadas
         $sqlRepuestos = "SELECT COALESCE(SUM(or_rep.cantidad * or_rep.precio_unitario), 0) as total_rep 
                          FROM ot_repuestos or_rep
                          INNER JOIN ordenes_trabajo ot ON or_rep.ot_id = ot.id
-                         WHERE ot.estado = 'cerrado'";
+                         WHERE ot.estado IN ('cerrado', 'pagada')";
         
-        // Query para sumar Servicios de OTs cerradas
+        // Query para sumar Servicios de OTs cerradas o pagadas
         $sqlServicios = "SELECT COALESCE(SUM(os.precio_aplicado - os.descuento_aplicado), 0) as total_ser
                          FROM ot_servicios os
                          INNER JOIN ordenes_trabajo ot ON os.ot_id = ot.id
-                         WHERE ot.estado = 'cerrado'";
+                         WHERE ot.estado IN ('cerrado', 'pagada')";
+
+        // Query para sumar Costo de Mano de Obra manual de OTs cerradas o pagadas
+        $sqlManoObra = "SELECT COALESCE(SUM(costo_mano_obra), 0) as total_mo 
+                        FROM ordenes_trabajo 
+                        WHERE estado IN ('cerrado', 'pagada')";
 
         $totalRep = (float)$this->db->query($sqlRepuestos)->fetchColumn();
         $totalSer = (float)$this->db->query($sqlServicios)->fetchColumn();
+        $totalMo  = (float)$this->db->query($sqlManoObra)->fetchColumn();
 
-        return $totalRep + $totalSer;
+        return $totalRep + $totalSer + $totalMo;
     }
 }

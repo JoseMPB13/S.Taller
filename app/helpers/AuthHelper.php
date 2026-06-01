@@ -139,6 +139,15 @@ class AuthHelper {
     }
 
     /**
+     * Genera y retorna un token CSRF seguro (alias de getCsrfToken).
+     * 
+     * @return string Token CSRF
+     */
+    public static function generateCsrf(): string {
+        return self::getCsrfToken();
+    }
+
+    /**
      * Valida si el token CSRF enviado coincide con el guardado en la sesión.
      * 
      * @param string|null $token Token recibido de la petición

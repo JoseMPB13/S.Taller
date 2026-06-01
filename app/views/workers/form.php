@@ -6,7 +6,7 @@ unset($_SESSION['form_worker_data']);
 
 $isEdit = ($worker !== null);
 $titulo = $isEdit ? 'Editar Trabajador' : 'Nuevo Trabajador';
-$subtitulo = $isEdit ? 'Modifique la información técnica y de contacto del trabajador.' : 'Registre la información básica, nivel técnico y tarifa horaria del nuevo mecánico.';
+$subtitulo = $isEdit ? 'Modifique la información técnica y de contacto del trabajador.' : 'Registre la información básica y nivel técnico del nuevo mecánico.';
 $actionUrl = $isEdit ? BASE_URL . '/trabajadores/actualizar/' . $worker['id'] : BASE_URL . '/trabajadores/guardar';
 
 // Cargar valores para rellenar campos
@@ -17,7 +17,6 @@ $especialidadesVal = $isEdit ? $worker['especialidades'] : ($formData['especiali
 $nivelVal = $isEdit ? $worker['nivel'] : ($formData['nivel'] ?? 'Junior');
 $contactoVal = $isEdit ? $worker['contacto'] : ($formData['contacto'] ?? '');
 $disponibilidadVal = $isEdit ? $worker['disponibilidad'] : ($formData['disponibilidad'] ?? 'disponible');
-$costoHoraVal = $isEdit ? $worker['costo_hora'] : ($formData['costo_hora'] ?? '0.00');
 ?>
 
 <div class="dashboard-header">
@@ -95,22 +94,15 @@ $costoHoraVal = $isEdit ? $worker['costo_hora'] : ($formData['costo_hora'] ?? '0
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-            <div class="form-group">
-                <label class="form-label" for="costo_hora">Costo por Hora (BOB) *</label>
-                <input class="form-control" type="number" name="costo_hora" id="costo_hora" min="0" step="0.01" value="<?php echo htmlspecialchars($costoHoraVal); ?>" required>
+        <?php if ($isEdit): ?>
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label class="form-label" for="estado">Estado *</label>
+                <select class="form-control" name="estado" id="estado" required>
+                    <option value="activo" <?php echo ($worker['estado'] === 'activo') ? 'selected' : ''; ?>>Activo</option>
+                    <option value="inactivo" <?php echo ($worker['estado'] === 'inactivo') ? 'selected' : ''; ?>>Inactivo</option>
+                </select>
             </div>
-
-            <?php if ($isEdit): ?>
-                <div class="form-group">
-                    <label class="form-label" for="estado">Estado *</label>
-                    <select class="form-control" name="estado" id="estado" required>
-                        <option value="activo" <?php echo ($worker['estado'] === 'activo') ? 'selected' : ''; ?>>Activo</option>
-                        <option value="inactivo" <?php echo ($worker['estado'] === 'inactivo') ? 'selected' : ''; ?>>Inactivo</option>
-                    </select>
-                </div>
-            <?php endif; ?>
-        </div>
+        <?php endif; ?>
 
         <div style="display: flex; gap: 1.5rem; margin-top: 2.5rem;">
             <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 0.8rem; font-size: 1rem;">

@@ -55,7 +55,6 @@
                     <th>Nivel</th>
                     <th>Contacto</th>
                     <th>Disponibilidad</th>
-                    <th>Costo/Hora</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -63,7 +62,7 @@
             <tbody>
                 <?php if (empty($workers)): ?>
                     <tr>
-                        <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 3rem 0;">
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem 0;">
                             No se encontraron trabajadores registrados en el sistema.
                         </td>
                     </tr>
@@ -95,9 +94,6 @@
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <strong><?php echo number_format($w['costo_hora'], 2, ',', '.'); ?> BOB</strong>
-                            </td>
-                            <td>
                                 <?php if ($w['estado'] === 'activo'): ?>
                                     <span class="badge badge-success">Activo</span>
                                 <?php else: ?>
@@ -107,7 +103,10 @@
                             <td>
                                 <div class="actions">
                                     <a href="<?php echo BASE_URL; ?>/trabajadores/editar/<?php echo $w['id']; ?>" class="btn btn-secondary btn-sm">Editar</a>
-                                    <a href="<?php echo BASE_URL; ?>/trabajadores/eliminar/<?php echo $w['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de desactivar y dar de baja (lógicamente) a este trabajador?')">Eliminar</a>
+                                    <form action="<?php echo BASE_URL; ?>/trabajadores/eliminar/<?php echo $w['id']; ?>" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de desactivar y dar de baja (lógicamente) a este trabajador?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::generateCsrf(); ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

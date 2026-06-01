@@ -56,7 +56,6 @@ class WorkerController {
         $nivel = $_POST['nivel'] ?? 'Junior';
         $contacto = trim(filter_input(INPUT_POST, 'contacto', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
         $disponibilidad = $_POST['disponibilidad'] ?? 'disponible';
-        $costo_hora = (float)($_POST['costo_hora'] ?? 0.00);
 
         $errors = [];
 
@@ -64,7 +63,6 @@ class WorkerController {
         if (empty($apellidos)) $errors[] = "El apellido es obligatorio.";
         if (empty($documento)) $errors[] = "El documento de identidad es obligatorio.";
         if (empty($especialidades)) $errors[] = "Debe registrar al menos una especialidad.";
-        if ($costo_hora < 0) $errors[] = "El costo por hora no puede ser un valor negativo.";
 
         // Validar niveles permitidos
         $nivelesValidos = ['Junior', 'Semi-Senior', 'Senior', 'Master'];
@@ -100,7 +98,6 @@ class WorkerController {
             'nivel'          => $nivel,
             'contacto'       => $contacto,
             'disponibilidad' => $disponibilidad,
-            'costo_hora'     => $costo_hora,
             'estado'         => 'activo'
         ];
 
@@ -162,7 +159,6 @@ class WorkerController {
         $nivel = $_POST['nivel'] ?? 'Junior';
         $contacto = trim(filter_input(INPUT_POST, 'contacto', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
         $disponibilidad = $_POST['disponibilidad'] ?? 'disponible';
-        $costo_hora = (float)($_POST['costo_hora'] ?? 0.00);
         $estado = $_POST['estado'] ?? 'activo';
 
         $errors = [];
@@ -171,7 +167,6 @@ class WorkerController {
         if (empty($apellidos)) $errors[] = "El apellido es obligatorio.";
         if (empty($documento)) $errors[] = "El documento de identidad es obligatorio.";
         if (empty($especialidades)) $errors[] = "Debe registrar al menos una especialidad.";
-        if ($costo_hora < 0) $errors[] = "El costo por hora no puede ser un valor negativo.";
 
         // Validar niveles
         $nivelesValidos = ['Junior', 'Semi-Senior', 'Senior', 'Master'];
@@ -206,7 +201,6 @@ class WorkerController {
             'nivel'          => $nivel,
             'contacto'       => $contacto,
             'disponibilidad' => $disponibilidad,
-            'costo_hora'     => $costo_hora,
             'estado'         => $estado
         ];
 
@@ -225,6 +219,13 @@ class WorkerController {
      */
     public function eliminar($id) {
         $id = (int)$id;
+
+        // Validar método POST y token CSRF
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !\App\Helpers\AuthHelper::validateCsrf($_POST['csrf_token'] ?? null)) {
+            $_SESSION['error'] = "Acción no autorizada (CSRF inválido o método no permitido).";
+            header('Location: ' . BASE_URL . '/trabajadores');
+            exit();
+        }
 
         if ($this->workerModel->deleteLogically($id)) {
             $_SESSION['success'] = "Trabajador dado de baja y desactivado del sistema.";

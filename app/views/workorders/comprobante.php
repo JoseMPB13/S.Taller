@@ -203,6 +203,10 @@
                 <td style="border: none; text-align: right; width: 120px;"><?php echo number_format($subtotal, 2, ',', '.'); ?> BOB</td>
             </tr>
             <tr>
+                <td style="border: none; text-align: right; font-weight: bold;">MANO DE OBRA (MANUAL):</td>
+                <td style="border: none; text-align: right;"><?php echo number_format($costo_mano_obra, 2, ',', '.'); ?> BOB</td>
+            </tr>
+            <tr>
                 <td style="border: none; text-align: right; font-size: 0.85rem; color: #666;">(Subtotal Neto Sin IVA):</td>
                 <td style="border: none; text-align: right; font-size: 0.85rem; color: #666;"><?php echo number_format($subtotal_sin_iva, 2, ',', '.'); ?> BOB</td>
             </tr>

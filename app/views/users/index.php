@@ -73,9 +73,12 @@ unset($_SESSION['form_data']);
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <div class="actions">
+                                                                    <div class="actions">
                                         <a href="<?php echo BASE_URL; ?>/usuarios/editar/<?php echo $user['id']; ?>" class="btn btn-secondary btn-sm">Editar</a>
-                                        <a href="<?php echo BASE_URL; ?>/usuarios/eliminar/<?php echo $user['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de desactivar y dar de baja (lógicamente) a este usuario?')">Eliminar</a>
+                                        <form action="<?php echo BASE_URL; ?>/usuarios/eliminar/<?php echo $user['id']; ?>" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de desactivar y dar de baja (lógicamente) a este usuario?')">
+                                            <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::generateCsrf(); ?>">
+                                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

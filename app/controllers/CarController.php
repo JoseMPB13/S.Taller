@@ -223,6 +223,13 @@ class CarController {
     public function eliminar($id) {
         $id = (int)$id;
 
+        // Validar método POST y token CSRF
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !\App\Helpers\AuthHelper::validateCsrf($_POST['csrf_token'] ?? null)) {
+            $_SESSION['error'] = "Acción no autorizada (CSRF inválido o método no permitido).";
+            header('Location: ' . BASE_URL . '/autos');
+            exit();
+        }
+
         if ($this->carModel->deleteLogically($id)) {
             $_SESSION['success'] = "Vehículo dado de baja y desactivado del sistema.";
         } else {

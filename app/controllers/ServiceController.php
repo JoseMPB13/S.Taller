@@ -190,6 +190,13 @@ class ServiceController {
     public function eliminar($id) {
         $id = (int)$id;
 
+        // Validar método POST y token CSRF
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !\App\Helpers\AuthHelper::validateCsrf($_POST['csrf_token'] ?? null)) {
+            $_SESSION['error'] = "Acción no autorizada (CSRF inválido o método no permitido).";
+            header('Location: ' . BASE_URL . '/servicios');
+            exit();
+        }
+
         if ($this->serviceModel->deleteLogically($id)) {
             $_SESSION['success'] = "Servicio dado de baja del catálogo.";
         } else {
