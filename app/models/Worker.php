@@ -9,11 +9,10 @@ use PDO;
  * Modelo de Trabajadores (RF-003)
  * Gestiona la base de datos de mecánicos y personal técnico del taller.
  */
-class Worker {
-    private $db;
+class Worker extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**

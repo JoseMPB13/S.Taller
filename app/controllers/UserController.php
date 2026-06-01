@@ -65,7 +65,14 @@ class UserController {
         if (empty($documento)) $errors[] = "El documento de identidad es obligatorio.";
         if (!$correo) $errors[] = "El correo electrónico es obligatorio o el formato no es válido.";
         if (empty($usuario)) $errors[] = "El nombre de usuario es obligatorio.";
-        if (empty($contrasena)) $errors[] = "La contraseña es obligatoria.";
+        if (empty($contrasena)) {
+            $errors[] = "La contraseña es obligatoria.";
+        } else {
+            // Mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial
+            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $contrasena)) {
+                $errors[] = "La contraseña debe tener al menos 8 caracteres, e incluir una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&).";
+            }
+        }
         if ($contrasena !== $confirmar_contrasena) $errors[] = "Las contraseñas no coinciden.";
 
         // Validaciones de unicidad contra la base de datos
@@ -181,8 +188,15 @@ class UserController {
         if (empty($usuario)) $errors[] = "El nombre de usuario es obligatorio.";
         
         // Validar contraseña si el usuario decide cambiarla
-        if (!empty($contrasena) && $contrasena !== $confirmar_contrasena) {
-            $errors[] = "Las nuevas contraseñas ingresadas no coinciden.";
+        if (!empty($contrasena)) {
+            if ($contrasena !== $confirmar_contrasena) {
+                $errors[] = "Las nuevas contraseñas ingresadas no coinciden.";
+            } else {
+                // Validar complejidad de contraseña nueva
+                if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $contrasena)) {
+                    $errors[] = "La nueva contraseña debe tener al menos 8 caracteres, e incluir una letra mayúscula, una letra minúscula, un número y un carácter especial (@$!%*?&).";
+                }
+            }
         }
 
         // Validaciones de unicidad (excluyendo el usuario actual)

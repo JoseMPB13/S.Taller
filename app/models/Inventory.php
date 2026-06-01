@@ -9,11 +9,10 @@ use PDO;
  * Modelo de Inventario (RF-006)
  * Gestiona el stock, repuestos, consumibles y la lógica de descarga automática.
  */
-class Inventory {
-    private $db;
+class Inventory extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**

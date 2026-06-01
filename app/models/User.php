@@ -2,18 +2,16 @@
 
 namespace App\Models;
 
-use Config\Database;
 use PDO;
 
 /**
  * Modelo de Usuario (RF-001)
  * Gestiona la persistencia e integridad de datos de los usuarios en la base de datos.
  */
-class User {
-    private $db;
+class User extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**
@@ -204,5 +202,43 @@ class User {
             'login_c' => $login
         ]);
         return $stmt->fetch();
+    }
+
+    /**
+     * Incrementa el contador de intentos fallidos de inicio de sesión de un usuario.
+     * 
+     * @param int $id ID del usuario
+     * @param int $attempts Nuevo contador de intentos
+     * @return bool Resultado de la operación
+     */
+    public function incrementFailedAttempts(int $id, int $attempts): bool {
+        $sql = "UPDATE usuarios SET intentos_fallidos = :attempts WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['attempts' => $attempts, 'id' => $id]);
+    }
+
+    /**
+     * Establece la fecha de bloqueo para un usuario y restablece los intentos fallidos.
+     * 
+     * @param int $id ID del usuario
+     * @param string $blockedUntil Fecha en formato Y-m-d H:i:s hasta la que estará bloqueado
+     * @return bool Resultado de la operación
+     */
+    public function blockUser(int $id, string $blockedUntil): bool {
+        $sql = "UPDATE usuarios SET bloqueado_hasta = :blocked_until, intentos_fallidos = 0 WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['blocked_until' => $blockedUntil, 'id' => $id]);
+    }
+
+    /**
+     * Restablece los intentos fallidos y la fecha de bloqueo de un usuario tras un inicio de sesión exitoso.
+     * 
+     * @param int $id ID del usuario
+     * @return bool Resultado de la operación
+     */
+    public function resetFailedAttempts(int $id): bool {
+        $sql = "UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['id' => $id]);
     }
 }

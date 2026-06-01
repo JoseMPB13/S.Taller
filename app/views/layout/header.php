@@ -52,3 +52,23 @@ if (empty($currentRoute)) {
         </nav>
     </header>
     <main>
+        <!-- Mensajes de Alerta Globales Sanitizados contra XSS (mitigación de vulnerabilidades) -->
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success" style="margin-bottom: 2rem;">
+                <?php echo nl2br(htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8')); unset($_SESSION['success']); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger" style="margin-bottom: 2rem;">
+                <?php 
+                $errors = explode('<br>', $_SESSION['error']);
+                $escaped_errors = array_map(function($e) {
+                    return htmlspecialchars($e, ENT_QUOTES, 'UTF-8');
+                }, $errors);
+                echo implode('<br>', $escaped_errors); 
+                unset($_SESSION['error']); 
+                ?>
+            </div>
+        <?php endif; ?>
+

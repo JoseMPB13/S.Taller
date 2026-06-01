@@ -51,27 +51,58 @@ class AuthController {
             // 2. Buscar usuario por nombre de usuario o por email
             $user = $this->userModel->getByUsernameOrEmail($loginInput);
 
-            // 3. Validar contraseña usando password_verify
-            if ($user && password_verify($contrasena, $user['contrasena'])) {
-                // Regenerar el ID de sesión para prevenir Session Fixation (Ataque de fijación de sesión)
-                session_regenerate_id(true);
+            if ($user) {
+                // Verificar si el usuario está bloqueado por fuerza bruta
+                if (!empty($user['bloqueado_hasta'])) {
+                    $blockedUntilTime = strtotime($user['bloqueado_hasta']);
+                    if ($blockedUntilTime > time()) {
+                        $remainingMinutes = ceil(($blockedUntilTime - time()) / 60);
+                        $_SESSION['error'] = "Esta cuenta está bloqueada temporalmente por seguridad. Intente de nuevo en {$remainingMinutes} minuto(s).";
+                        $_SESSION['form_login_value'] = $loginInput;
+                        header('Location: ' . BASE_URL . '/login');
+                        exit();
+                    }
+                }
 
-                // Guardar datos en la sesión
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_nombre'] = $user['nombre'];
-                $_SESSION['user_usuario'] = $user['usuario'];
-                $_SESSION['user_rol'] = $user['rol_nombre'];
-                $_SESSION['user_rol_id'] = $user['rol_id'];
+                // 3. Validar contraseña usando password_verify
+                if (password_verify($contrasena, $user['contrasena'])) {
+                    // Restablecer contador de intentos fallidos al iniciar sesión correctamente
+                    $this->userModel->resetFailedAttempts($user['id']);
 
-                $_SESSION['success'] = "¡Bienvenido de nuevo, " . htmlspecialchars($user['nombre']) . "!";
-                header('Location: ' . BASE_URL . '/dashboard');
-                exit();
+                    // Regenerar el ID de sesión para prevenir Session Fixation (Ataque de fijación de sesión)
+                    session_regenerate_id(true);
+
+                    // Guardar datos en la sesión
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_nombre'] = $user['nombre'];
+                    $_SESSION['user_usuario'] = $user['usuario'];
+                    $_SESSION['user_rol'] = $user['rol_nombre'];
+                    $_SESSION['user_rol_id'] = $user['rol_id'];
+
+                    $_SESSION['success'] = "¡Bienvenido de nuevo, " . htmlspecialchars($user['nombre']) . "!";
+                    header('Location: ' . BASE_URL . '/dashboard');
+                    exit();
+                } else {
+                    // Incrementar intentos fallidos
+                    $attempts = (int)$user['intentos_fallidos'] + 1;
+                    if ($attempts >= 5) {
+                        // Bloquear por 15 minutos (900 segundos)
+                        $blockedUntil = date('Y-m-d H:i:s', time() + 900);
+                        $this->userModel->blockUser($user['id'], $blockedUntil);
+                        $_SESSION['error'] = "Ha superado el número máximo de intentos. Cuenta bloqueada por 15 minutos.";
+                    } else {
+                        $this->userModel->incrementFailedAttempts($user['id'], $attempts);
+                        $remaining = 5 - $attempts;
+                        $_SESSION['error'] = "Credenciales incorrectas. Intentos restantes antes del bloqueo: {$remaining}.";
+                    }
+                }
             } else {
                 $_SESSION['error'] = "Credenciales incorrectas o usuario inactivo.";
-                $_SESSION['form_login_value'] = $loginInput;
-                header('Location: ' . BASE_URL . '/login');
-                exit();
             }
+
+            $_SESSION['form_login_value'] = $loginInput;
+            header('Location: ' . BASE_URL . '/login');
+            exit();
         }
 
         // Si es GET, cargar la vista de login

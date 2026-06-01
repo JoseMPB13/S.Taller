@@ -41,16 +41,23 @@
             Control de Acceso
         </h2>
         
-        <!-- Mensajes de Error y Éxito -->
+        <!-- Mensajes de Error y Éxito Sanitizados contra XSS -->
         <?php if (isset($_SESSION['error'])): ?>
             <div class="alert alert-danger">
-                <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                <?php 
+                $errors = explode('<br>', $_SESSION['error']);
+                $escaped_errors = array_map(function($e) {
+                    return htmlspecialchars($e, ENT_QUOTES, 'UTF-8');
+                }, $errors);
+                echo implode('<br>', $escaped_errors); 
+                unset($_SESSION['error']); 
+                ?>
             </div>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['success'])): ?>
             <div class="alert alert-success">
-                <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+                <?php echo nl2br(htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8')); unset($_SESSION['success']); ?>
             </div>
         <?php endif; ?>
 

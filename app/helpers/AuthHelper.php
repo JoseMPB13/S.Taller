@@ -9,6 +9,29 @@ namespace App\Helpers;
 class AuthHelper {
     
     /**
+     * Destruye de forma segura la sesión y limpia las cookies de sesión.
+     */
+    public static function destroySession() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+        session_destroy();
+    }
+
+    /**
      * Inicializa la sesión si no está ya activa, aplicando configuraciones de seguridad.
      */
     public static function initSession() {
@@ -18,7 +41,23 @@ class AuthHelper {
             ini_set('session.use_only_cookies', 1);
             ini_set('session.cookie_samesite', 'Strict'); // Mitiga CSRF en navegadores modernos
             
+            // Forzar cookie de sesión segura en HTTPS/producción
+            $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+            if ($isSecure) {
+                ini_set('session.cookie_secure', 1);
+            }
+            
             session_start();
+        }
+
+        // Control de inactividad de sesión (30 minutos = 1800 segundos)
+        if (isset($_SESSION['user_id'])) {
+            if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
+                self::destroySession();
+                header('Location: ' . BASE_URL . '/login');
+                exit();
+            }
+            $_SESSION['last_activity'] = time(); // Renovar marca de tiempo de actividad
         }
     }
 
@@ -81,13 +120,7 @@ class AuthHelper {
         self::requireLogin();
         if (!self::isAdmin()) {
             http_response_code(403);
-            require_once ROOT_PATH . '/app/views/layout/header.php';
-            echo '<div class="card" style="max-width:600px; margin: 4rem auto; text-align:center; padding: 3rem;">
-                    <h1 style="color:var(--danger); margin-bottom:1rem;">403 - Acceso Denegado</h1>
-                    <p style="color:var(--text-muted); margin-bottom: 2rem;">No tienes los permisos necesarios para acceder a este módulo de administración.</p>
-                    <a href="' . BASE_URL . '/usuarios" class="btn btn-primary">Volver al Inicio</a>
-                  </div>';
-            require_once ROOT_PATH . '/app/views/layout/footer.php';
+            require_once ROOT_PATH . '/app/views/errors/403.php';
             exit();
         }
     }

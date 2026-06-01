@@ -8,11 +8,10 @@ use PDO;
 /**
  * Modelo de Rol (Fase 3: Soporte para asignar roles a usuarios)
  */
-class Role {
-    private $db;
+class Role extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**

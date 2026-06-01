@@ -9,11 +9,10 @@ use PDO;
  * Modelo de Autos (RF-004 y RF-011)
  * Gestiona el CRUD y las validaciones de vehículos del taller.
  */
-class Car {
-    private $db;
+class Car extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**

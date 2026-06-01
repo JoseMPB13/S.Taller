@@ -10,11 +10,10 @@ use Exception;
  * Modelo de Detalles de Órdenes de Trabajo
  * Maneja asignaciones de mecánicos (RF-012), consumos de repuestos (RF-013) y servicios aplicados (RF-014).
  */
-class WorkOrderDetail {
-    private $db;
+class WorkOrderDetail extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**

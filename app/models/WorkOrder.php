@@ -10,11 +10,10 @@ use Exception;
  * Modelo de Órdenes de Trabajo (RF-005)
  * Gestiona el encabezado de las OTs y la asignación inicial de mecánicos.
  */
-class WorkOrder {
-    private $db;
+class WorkOrder extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**

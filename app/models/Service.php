@@ -9,11 +9,10 @@ use PDO;
  * Modelo de Servicios (RF-007)
  * Gestiona el catálogo de servicios ofrecidos, tiempos y tarifas de mano de obra.
  */
-class Service {
-    private $db;
+class Service extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**

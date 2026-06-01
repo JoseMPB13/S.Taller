@@ -9,11 +9,10 @@ use PDO;
  * Modelo de Clientes (RF-002)
  * Gestiona el CRUD y la persistencia de datos de clientes con soporte para eliminación lógica.
  */
-class Client {
-    private $db;
+class Client extends BaseModel {
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        parent::__construct();
     }
 
     /**
