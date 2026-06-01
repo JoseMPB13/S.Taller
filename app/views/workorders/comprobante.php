@@ -18,7 +18,7 @@
 
     @media print {
         /* Ocultar UI de navegación */
-        .navbar, .btn, .dashboard-header, .alert, footer, .sidebar {
+        .navbar, .btn, .btn-custom-download, .dashboard-header, .alert, footer, .sidebar {
             display: none !important;
         }
         
@@ -103,11 +103,38 @@
         width: 200px;
         padding-top: 0.5rem;
     }
+    
+    /* Botón de descarga premium */
+    .btn-custom-download {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #ffffff !important;
+        font-weight: 600;
+        padding: 0.55rem 1.2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2), 0 2px 4px -1px rgba(16, 185, 129, 0.1);
+        transition: all 0.2s ease-in-out;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+    }
+    .btn-custom-download:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -2px rgba(16, 185, 129, 0.1);
+    }
+    .btn-custom-download:active {
+        transform: translateY(0);
+    }
 </style>
 
 <div style="margin-bottom: 1rem; text-align: right;">
     <button onclick="window.print()" class="btn btn-primary" style="margin-right: 1rem;">🖨️ Imprimir Comprobante</button>
-    <a href="<?php echo BASE_URL; ?>/ordenes/descargar_pdf/<?php echo $ot['id']; ?>" class="btn btn-success" style="margin-right: 1rem;">📄 Descargar PDF</a>
+    <a href="<?php echo BASE_URL; ?>/ordenes/descargar_pdf/<?php echo $ot['id']; ?>" class="btn-custom-download" style="margin-right: 1rem;">📄 Descargar PDF</a>
     <a href="<?php echo BASE_URL; ?>/ordenes/detalles/<?php echo $ot['id']; ?>" class="btn btn-secondary">Volver a la OT</a>
 </div>
 
