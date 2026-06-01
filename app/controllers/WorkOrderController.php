@@ -466,16 +466,16 @@ class WorkOrderController {
         // Sección: Datos del Cliente
         $pdf->renderSectionHeader('DATOS DE FACTURACIÓN Y CLIENTE');
         $pdf->SetFont('Arial', '', 9);
-        $pdf->Cell(95, 5, utf8_decode('Razón Social: ' . $razon_social), 0, 0);
-        $pdf->Cell(95, 5, utf8_decode('NIT / CI: ' . $nit_ci), 0, 1);
-        $pdf->Cell(95, 5, utf8_decode('Cliente Registrado: ' . $ot['cliente_nombres'] . ' ' . $ot['cliente_apellidos']), 0, 0);
-        $pdf->Cell(95, 5, utf8_decode('Fecha Emisión: ' . date('d/m/Y')), 0, 1);
+        $pdf->Cell(95, 5, $pdf->decode('Razón Social: ' . $razon_social), 0, 0);
+        $pdf->Cell(95, 5, $pdf->decode('NIT / CI: ' . $nit_ci), 0, 1);
+        $pdf->Cell(95, 5, $pdf->decode('Cliente Registrado: ' . $ot['cliente_nombres'] . ' ' . $ot['cliente_apellidos']), 0, 0);
+        $pdf->Cell(95, 5, $pdf->decode('Fecha Emisión: ' . date('d/m/Y')), 0, 1);
         $pdf->Ln(4);
 
         // Sección: Datos del Vehículo
         $pdf->renderSectionHeader('DETALLES DEL VEHÍCULO');
-        $pdf->Cell(95, 5, utf8_decode('Marca/Modelo: ' . $ot['auto_marca'] . ' ' . $ot['auto_modelo']), 0, 0);
-        $pdf->Cell(95, 5, utf8_decode('Placa: ' . $ot['auto_placa']), 0, 1);
+        $pdf->Cell(95, 5, $pdf->decode('Marca/Modelo: ' . $ot['auto_marca'] . ' ' . $ot['auto_modelo']), 0, 0);
+        $pdf->Cell(95, 5, $pdf->decode('Placa: ' . $ot['auto_placa']), 0, 1);
         $pdf->Ln(4);
 
         // Sección: Repuestos
@@ -538,10 +538,10 @@ class WorkOrderController {
 
         $pdf->SetFont('Arial', '', 9);
         $pdf->SetTextColor(100, 116, 139);
-        $pdf->Cell(130, 5, utf8_decode('(Subtotal Neto Sin IVA):'), 0, 0, 'R');
+        $pdf->Cell(130, 5, $pdf->decode('(Subtotal Neto Sin IVA):'), 0, 0, 'R');
         $pdf->Cell(60, 5, number_format($subtotal_sin_iva, 2, ',', '.') . ' BOB', 0, 1, 'R');
         
-        $pdf->Cell(130, 5, utf8_decode('(IVA 13% Incluido):'), 0, 0, 'R');
+        $pdf->Cell(130, 5, $pdf->decode('(IVA 13% Incluido):'), 0, 0, 'R');
         $pdf->Cell(60, 5, number_format($monto_iva, 2, ',', '.') . ' BOB', 0, 1, 'R');
 
         $pdf->Ln(2);
@@ -558,8 +558,8 @@ class WorkOrderController {
         $pdf->Line(20, $y + 10, 80, $y + 10);
         $pdf->Line(110, $y + 10, 170, $y + 10);
         $pdf->SetY($y + 11);
-        $pdf->Cell(95, 5, utf8_decode('Conformidad del Cliente (' . ($nit_ci !== '0' ? $nit_ci : 'CI/NIT') . ')'), 0, 0, 'C');
-        $pdf->Cell(95, 5, utf8_decode('Autorizado Taller S.Taller'), 0, 1, 'C');
+        $pdf->Cell(95, 5, $pdf->decode('Conformidad del Cliente (' . ($nit_ci !== '0' ? $nit_ci : 'CI/NIT') . ')'), 0, 0, 'C');
+        $pdf->Cell(95, 5, $pdf->decode('Autorizado Taller S.Taller'), 0, 1, 'C');
 
         // Directorio físico de guardado
         $invoicesDir = ROOT_PATH . '/public/invoices';
@@ -602,24 +602,24 @@ class WorkOrderController {
         // Sección: Información General
         $pdf->renderSectionHeader('INFORMACIÓN GENERAL DE LA ORDEN');
         $pdf->SetFont('Arial', '', 9);
-        $pdf->Cell(95, 5, utf8_decode('Cliente: ' . $ot['cliente_nombres'] . ' ' . $ot['cliente_apellidos']), 0, 0);
-        $pdf->Cell(95, 5, utf8_decode('Prioridad: ' . ucfirst($ot['prioridad'])), 0, 1);
-        $pdf->Cell(95, 5, utf8_decode('Fecha Ingreso: ' . date('d/m/Y', strtotime($ot['fecha_ingreso']))), 0, 0);
-        $pdf->Cell(95, 5, utf8_decode('Estado actual: ' . strtoupper(str_replace('_', ' ', $ot['estado']))), 0, 1);
+        $pdf->Cell(95, 5, $pdf->decode('Cliente: ' . $ot['cliente_nombres'] . ' ' . $ot['cliente_apellidos']), 0, 0);
+        $pdf->Cell(95, 5, $pdf->decode('Prioridad: ' . ucfirst($ot['prioridad'])), 0, 1);
+        $pdf->Cell(95, 5, $pdf->decode('Fecha Ingreso: ' . date('d/m/Y', strtotime($ot['fecha_ingreso']))), 0, 0);
+        $pdf->Cell(95, 5, $pdf->decode('Estado actual: ' . strtoupper(str_replace('_', ' ', $ot['estado']))), 0, 1);
         $pdf->Ln(4);
 
         // Sección: Datos del Vehículo
         $pdf->renderSectionHeader('DATOS DEL VEHÍCULO');
-        $pdf->Cell(95, 5, utf8_decode('Placa: ' . $ot['auto_placa']), 0, 0);
-        $pdf->Cell(95, 5, utf8_decode('Marca / Modelo: ' . $ot['auto_marca'] . ' ' . $ot['auto_modelo']), 0, 1);
+        $pdf->Cell(95, 5, $pdf->decode('Placa: ' . $ot['auto_placa']), 0, 0);
+        $pdf->Cell(95, 5, $pdf->decode('Marca / Modelo: ' . $ot['auto_marca'] . ' ' . $ot['auto_modelo']), 0, 1);
         $pdf->Ln(4);
 
         // Sección: Diagnóstico
         $pdf->renderSectionHeader('DIAGNÓSTICO Y FALLAS REPORTADAS');
         $pdf->SetFont('Arial', '', 9);
-        $pdf->MultiCell(0, 5, utf8_decode('Falla Reportada: ' . $ot['falla_reportada']), 0, 'L');
+        $pdf->MultiCell(0, 5, $pdf->decode('Falla Reportada: ' . $ot['falla_reportada']), 0, 'L');
         if (!empty($ot['observaciones'])) {
-            $pdf->MultiCell(0, 5, utf8_decode('Observaciones adicionales: ' . $ot['observaciones']), 0, 'L');
+            $pdf->MultiCell(0, 5, $pdf->decode('Observaciones adicionales: ' . $ot['observaciones']), 0, 'L');
         }
         $pdf->Ln(4);
 
@@ -631,9 +631,9 @@ class WorkOrderController {
         }
         $pdf->SetFont('Arial', '', 9);
         if (empty($thisMecanicos)) {
-            $pdf->Cell(0, 5, utf8_decode('Sin mecánicos asignados.'), 0, 1);
+            $pdf->Cell(0, 5, $pdf->decode('Sin mecánicos asignados.'), 0, 1);
         } else {
-            $pdf->Cell(0, 5, utf8_decode(implode(', ', $thisMecanicos)), 0, 1);
+            $pdf->Cell(0, 5, $pdf->decode(implode(', ', $thisMecanicos)), 0, 1);
         }
         $pdf->Ln(4);
 

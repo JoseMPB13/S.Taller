@@ -23,6 +23,22 @@ class PdfReportHelper extends \FPDF {
     public $documentSubTitle = '';
 
     /**
+     * Decodifica una cadena de UTF-8 a ISO-8859-1 para compatibilidad con FPDF.
+     * Evita el uso de la función obsoleta utf8_decode() en PHP 8.2+.
+     * 
+     * @param string $str
+     * @return string
+     */
+    public function decode($str) {
+        if (function_exists('mb_convert_encoding')) {
+            return mb_convert_encoding($str ?? '', 'ISO-8859-1', 'UTF-8');
+        } elseif (function_exists('iconv')) {
+            return iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $str ?? '');
+        }
+        return @utf8_decode($str ?? '');
+    }
+
+    /**
      * Sobrescribe el método Header de FPDF para estandarizar el encabezado.
      */
     public function Header() {
@@ -34,25 +50,25 @@ class PdfReportHelper extends \FPDF {
         // Tipo de documento
         $this->SetFont('Arial', 'B', 10);
         $this->SetTextColor(16, 185, 129); // Color acento verde (#10b981)
-        $this->Cell(0, 8, strtoupper(utf8_decode($this->documentTitle)), 0, 1, 'R');
+        $this->Cell(0, 8, strtoupper($this->decode($this->documentTitle)), 0, 1, 'R');
         
         // Datos de contacto y ubicación
         $this->SetFont('Arial', '', 9);
         $this->SetTextColor(100, 116, 139); // Gris suave (#64748b)
-        $this->Cell(120, 5, utf8_decode('Servicios Mecánicos Integrales'), 0, 0, 'L');
+        $this->Cell(120, 5, $this->decode('Servicios Mecánicos Integrales'), 0, 0, 'L');
         
         // Identificador
         $this->SetFont('Arial', 'B', 9);
         $this->SetTextColor(71, 85, 105);
         if (!empty($this->documentSubTitle)) {
-            $this->Cell(0, 5, utf8_decode($this->documentSubTitle), 0, 1, 'R');
+            $this->Cell(0, 5, $this->decode($this->documentSubTitle), 0, 1, 'R');
         } else {
             $this->Ln(5);
         }
         
         $this->SetFont('Arial', '', 9);
         $this->SetTextColor(100, 116, 139);
-        $this->Cell(0, 5, utf8_decode('Av. Principal #123, Santa Cruz, Bolivia'), 0, 1, 'L');
+        $this->Cell(0, 5, $this->decode('Av. Principal #123, Santa Cruz, Bolivia'), 0, 1, 'L');
         $this->Cell(0, 5, 'Tel: +591 71234567 | NIT: 1029384756', 0, 1, 'L');
         
         // Línea divisoria decorativa
@@ -73,10 +89,10 @@ class PdfReportHelper extends \FPDF {
         
         // Fecha y hora actual
         $fecha = date('d/m/Y H:i:s');
-        $this->Cell(100, 10, utf8_decode('Impreso el: ' . $fecha), 0, 0, 'L');
+        $this->Cell(100, 10, $this->decode('Impreso el: ' . $fecha), 0, 0, 'L');
         
         // Paginación dinámica
-        $this->Cell(0, 10, utf8_decode('Página ' . $this->PageNo() . ' de {nb}'), 0, 0, 'R');
+        $this->Cell(0, 10, $this->decode('Página ' . $this->PageNo() . ' de {nb}'), 0, 0, 'R');
     }
 
     /**
@@ -88,7 +104,7 @@ class PdfReportHelper extends \FPDF {
         $this->SetFont('Arial', 'B', 10);
         $this->SetTextColor(30, 41, 59);
         $this->SetFillColor(248, 250, 252); // Fondo extremadamente suave (#f8fafc)
-        $this->Cell(0, 6, utf8_decode($title), 0, 1, 'L', true);
+        $this->Cell(0, 6, $this->decode($title), 0, 1, 'L', true);
         $this->Ln(2);
     }
 
@@ -111,7 +127,7 @@ class PdfReportHelper extends \FPDF {
         // Renderizar Cabecera
         for ($i = 0; $i < count($header); $i++) {
             $align = isset($aligns[$i]) ? $aligns[$i] : 'L';
-            $this->Cell($widths[$i], 7, utf8_decode($header[$i]), 1, 0, $align, true);
+            $this->Cell($widths[$i], 7, $this->decode($header[$i]), 1, 0, $align, true);
         }
         $this->Ln();
         
@@ -122,7 +138,7 @@ class PdfReportHelper extends \FPDF {
         foreach ($data as $row) {
             for ($i = 0; $i < count($row); $i++) {
                 $align = isset($aligns[$i]) ? $aligns[$i] : 'L';
-                $this->Cell($widths[$i], 6, utf8_decode($row[$i]), 1, 0, $align);
+                $this->Cell($widths[$i], 6, $this->decode($row[$i]), 1, 0, $align);
             }
             $this->Ln();
         }
