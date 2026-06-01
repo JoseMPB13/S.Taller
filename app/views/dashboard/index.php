@@ -42,7 +42,7 @@
 <div class="grid-details">
     
     <!-- Últimas Órdenes de Trabajo -->
-    <div class="card">
+    <div class="card dashboard-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h2 class="card-title" style="margin: 0;">Últimas Órdenes de Trabajo</h2>
             <a href="<?php echo BASE_URL; ?>/ordenes" class="btn btn-secondary btn-sm">Ver Todas</a>
@@ -95,34 +95,44 @@
     </div>
 
     <!-- Alertas Críticas (Inventario Bajo) -->
-    <div class="card" style="border: 1px solid rgba(239, 68, 68, 0.3);">
-        <h2 class="card-title" style="color: var(--danger); display: flex; align-items: center; gap: 0.5rem;">
+    <div class="card dashboard-card" style="border: 1px solid rgba(239, 68, 68, 0.3); display: flex; flex-direction: column;">
+        <h2 class="card-title" style="color: var(--danger); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
             ⚠️ Alertas de Inventario
         </h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Repuestos por debajo del stock mínimo (Requieren compra urgente).</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Repuestos por debajo del stock mínimo (Requieren compra urgente).</p>
         
         <?php if (empty($alertas_inventario)): ?>
-            <div style="text-align: center; padding: 2rem 1rem; color: #10b981; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
-                <strong>✅ Inventario Saludable</strong><br>
-                <small>Ningún artículo está por debajo de su límite.</small>
+            <div style="text-align: center; padding: 2.5rem 1.5rem; color: #34d399; background: rgba(16, 185, 129, 0.05); border: 1px dashed rgba(16, 185, 129, 0.2); border-radius: 8px; margin: auto 0;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">✅</div>
+                <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Inventario Saludable</strong>
+                <small style="color: var(--text-muted);">Ningún artículo está por debajo de su límite.</small>
             </div>
         <?php else: ?>
-            <ul style="list-style: none; padding: 0; margin: 0;">
-                <?php foreach ($alertas_inventario as $inv): ?>
-                    <li style="padding: 0.75rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(239, 68, 68, 0.05); margin-bottom: 0.5rem; border-radius: 4px;">
-                        <div>
-                            <div style="font-weight: 600; font-size: 0.95rem;"><?php echo htmlspecialchars($inv['codigo_sku'] . ' - ' . $inv['nombre']); ?></div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Mínimo requerido: <?php echo $inv['stock_minimo']; ?></div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 1.2rem; font-weight: 800; color: var(--danger);"><?php echo $inv['stock']; ?></div>
-                            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--danger);">En Stock</div>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-            <div style="margin-top: 1rem; text-align: center;">
-                <a href="<?php echo BASE_URL; ?>/inventario" class="btn btn-secondary btn-sm" style="width: 100%;">Gestionar Inventario</a>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Repuesto / SKU</th>
+                            <th class="text-right">Stock</th>
+                            <th class="text-right">Mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($alertas_inventario as $inv): ?>
+                            <tr>
+                                <td>
+                                    <strong><?php echo htmlspecialchars($inv['nombre']); ?></strong><br>
+                                    <small style="color: var(--text-muted);"><?php echo htmlspecialchars($inv['codigo_sku']); ?></small>
+                                </td>
+                                <td class="text-right" style="color: var(--danger); font-weight: bold;"><?php echo $inv['stock']; ?></td>
+                                <td class="text-right" style="color: var(--text-muted);"><?php echo $inv['stock_minimo']; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: auto; padding-top: 1rem;">
+                <a href="<?php echo BASE_URL; ?>/inventario" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">Gestionar Inventario</a>
             </div>
         <?php endif; ?>
     </div>

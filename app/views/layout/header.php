@@ -13,7 +13,7 @@ if (empty($currentRoute)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S.Taller - Sistema de Gestión de Taller</title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css?v=<?php echo time(); ?>">
 </head>
 <body>
     <header>
