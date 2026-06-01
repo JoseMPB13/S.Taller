@@ -58,7 +58,7 @@ if ($isEdit) {
         <!-- Token de seguridad CSRF -->
         <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::getCsrfToken(); ?>">
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="nombres">Nombres *</label>
                 <input class="form-control" type="text" name="nombres" id="nombres" placeholder="Ej. Carlos" value="<?php echo htmlspecialchars($nombresVal); ?>" required>
@@ -70,7 +70,7 @@ if ($isEdit) {
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="documento">Documento de Identidad (CI / DNI / NIT) *</label>
                 <input class="form-control" type="text" name="documento" id="documento" placeholder="Ej. 6543210" value="<?php echo htmlspecialchars($documentoVal); ?>" required>
@@ -82,7 +82,7 @@ if ($isEdit) {
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="correo">Correo Electrónico</label>
                 <input class="form-control" type="email" name="correo" id="correo" placeholder="correo@ejemplo.com" value="<?php echo htmlspecialchars($correoVal); ?>">
@@ -119,7 +119,7 @@ if ($isEdit) {
             </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="nit_facturacion">NIT / C.I. de Facturación</label>
                 <input class="form-control" type="text" name="nit_facturacion" id="nit_facturacion" placeholder="Ej. 1205632025" value="<?php echo htmlspecialchars($nitVal); ?>">

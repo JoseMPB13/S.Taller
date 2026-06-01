@@ -1,0 +1,15 @@
+# Evitar copiar la carpeta del repositorio Git
+.git
+
+# Evitar copiar archivos de variables de entorno locales (secretos)
+.env
+.env.example
+
+# Evitar copiar los PDFs de facturas generados localmente
+public/invoices/*.pdf
+
+# Evitar copiar scripts y respaldos SQL de sembrado de datos en producción
+seed.php
+seed_data.sql
+database.sql
+update_database.sql

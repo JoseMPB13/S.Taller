@@ -59,7 +59,7 @@ $observacionesVal = $isEdit ? $car['observaciones'] : ($formData['observaciones'
             </select>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="placa">Placa *</label>
                 <input class="form-control" type="text" name="placa" id="placa" placeholder="Ej. 1234ABC" style="text-transform: uppercase;" value="<?php echo htmlspecialchars($placaVal); ?>" required>
@@ -71,7 +71,7 @@ $observacionesVal = $isEdit ? $car['observaciones'] : ($formData['observaciones'
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="marca">Marca *</label>
                 <input class="form-control" type="text" name="marca" id="marca" placeholder="Ej. Toyota" value="<?php echo htmlspecialchars($marcaVal); ?>" required>
@@ -83,7 +83,7 @@ $observacionesVal = $isEdit ? $car['observaciones'] : ($formData['observaciones'
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="anio">Año *</label>
                 <input class="form-control" type="number" name="anio" id="anio" min="1900" max="<?php echo date('Y') + 1; ?>" value="<?php echo htmlspecialchars($anioVal); ?>" required>
@@ -95,7 +95,7 @@ $observacionesVal = $isEdit ? $car['observaciones'] : ($formData['observaciones'
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="kilometraje">Kilometraje actual *</label>
                 <input class="form-control" type="number" name="kilometraje" id="kilometraje" min="0" value="<?php echo htmlspecialchars($kilometrajeVal); ?>" required>

@@ -39,7 +39,7 @@
 </div>
 
 <!-- Tablas Inferiores -->
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+<div class="grid-details">
     
     <!-- Últimas Órdenes de Trabajo -->
     <div class="card">

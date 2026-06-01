@@ -44,7 +44,7 @@ $autosJson = json_encode($autosPorCliente);
         <!-- Token CSRF -->
         <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::getCsrfToken(); ?>">
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="cliente_id">Cliente / Propietario *</label>
                 <select class="form-control" name="cliente_id" id="cliente_id" required onchange="actualizarAutos()">
@@ -66,7 +66,7 @@ $autosJson = json_encode($autosPorCliente);
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="trabajador_id">Mecánico Asignado (Opcional por ahora)</label>
                 <select class="form-control" name="trabajador_id" id="trabajador_id">

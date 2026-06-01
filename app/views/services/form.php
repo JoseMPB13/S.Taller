@@ -56,7 +56,7 @@ $descuentoMaxVal = $isEdit ? ($taxesJson['descuento_max'] ?? '0.00') : ($formDat
             <textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Detalle qué incluye el servicio técnico (piezas de diagnóstico, limpieza)..."><?php echo htmlspecialchars($descripcionVal); ?></textarea>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="tiempo_estimado">Tiempo Estimado (minutos) *</label>
                 <input class="form-control" type="number" name="tiempo_estimado" id="tiempo_estimado" min="1" value="<?php echo htmlspecialchars($tiempoVal); ?>" required>
@@ -68,7 +68,7 @@ $descuentoMaxVal = $isEdit ? ($taxesJson['descuento_max'] ?? '0.00') : ($formDat
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="impuesto_iva">Impuesto Aplicable (IVA %) *</label>
                 <input class="form-control" type="number" name="impuesto_iva" id="impuesto_iva" min="0" max="100" step="0.01" value="<?php echo htmlspecialchars($ivaVal); ?>" required>

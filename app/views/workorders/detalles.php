@@ -27,7 +27,7 @@
     </div>
 <?php endif; ?>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+<div class="grid-details">
     <!-- Columna Principal: Repuestos y Servicios -->
     <div>
         <!-- PANEL: SERVICIOS -->

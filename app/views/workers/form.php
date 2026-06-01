@@ -44,7 +44,7 @@ $disponibilidadVal = $isEdit ? $worker['disponibilidad'] : ($formData['disponibi
         <!-- Token CSRF -->
         <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::getCsrfToken(); ?>">
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="nombres">Nombres *</label>
                 <input class="form-control" type="text" name="nombres" id="nombres" placeholder="Ej. Juan" value="<?php echo htmlspecialchars($nombresVal); ?>" required>
@@ -56,7 +56,7 @@ $disponibilidadVal = $isEdit ? $worker['disponibilidad'] : ($formData['disponibi
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="documento">Documento de Identidad (CI / DNI) *</label>
                 <input class="form-control" type="text" name="documento" id="documento" placeholder="Ej. 10203040" value="<?php echo htmlspecialchars($documentoVal); ?>" required>
@@ -73,7 +73,7 @@ $disponibilidadVal = $isEdit ? $worker['disponibilidad'] : ($formData['disponibi
             <input class="form-control" type="text" name="especialidades" id="especialidades" placeholder="Ej. Mecánica de motores, Diagnóstico electrónico, Frenos ABS" value="<?php echo htmlspecialchars($especialidadesVal); ?>" required>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="nivel">Nivel Técnico *</label>
                 <select class="form-control" name="nivel" id="nivel" required>

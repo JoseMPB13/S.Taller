@@ -47,7 +47,7 @@ $proveedorVal = $isEdit ? $item['proveedor'] : ($formData['proveedor'] ?? '');
         <!-- Token CSRF -->
         <input type="hidden" name="csrf_token" value="<?php echo \App\Helpers\AuthHelper::getCsrfToken(); ?>">
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="codigo_sku">Código SKU (Único) *</label>
                 <input class="form-control" type="text" name="codigo_sku" id="codigo_sku" placeholder="Ej. FIL-103" style="text-transform: uppercase;" value="<?php echo htmlspecialchars($skuVal); ?>" required>
@@ -59,7 +59,7 @@ $proveedorVal = $isEdit ? $item['proveedor'] : ($formData['proveedor'] ?? '');
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="categoria">Categoría *</label>
                 <input class="form-control" type="text" name="categoria" id="categoria" placeholder="Ej. Filtros, Frenos, Lubricantes" value="<?php echo htmlspecialchars($categoriaVal); ?>" required>
@@ -77,7 +77,7 @@ $proveedorVal = $isEdit ? $item['proveedor'] : ($formData['proveedor'] ?? '');
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="costo">Costo Unitario (BOB) *</label>
                 <input class="form-control" type="number" name="costo" id="costo" min="0" step="0.01" value="<?php echo htmlspecialchars($costoVal); ?>" required>
@@ -89,7 +89,7 @@ $proveedorVal = $isEdit ? $item['proveedor'] : ($formData['proveedor'] ?? '');
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="stock">Stock Actual *</label>
                 <input class="form-control" type="number" name="stock" id="stock" min="0" value="<?php echo htmlspecialchars($stockVal); ?>" required>
@@ -101,7 +101,7 @@ $proveedorVal = $isEdit ? $item['proveedor'] : ($formData['proveedor'] ?? '');
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <div class="grid-2col">
             <div class="form-group">
                 <label class="form-label" for="ubicacion">Ubicación Física</label>
                 <input class="form-control" type="text" name="ubicacion" id="ubicacion" placeholder="Ej. Estante A - Sección 3" value="<?php echo htmlspecialchars($ubicacionVal); ?>">

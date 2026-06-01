@@ -321,3 +321,77 @@ footer {
     font-size: 0.9rem;
     margin-top: auto;
 }
+
+/* Clases de grilla responsivas para vistas y formularios */
+.grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.grid-details {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+/* Contenedor de tablas responsivas para pantallas pequeñas */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.table-responsive .table {
+    min-width: 600px; /* Garantiza legibilidad sin comprimir columnas */
+}
+
+/* Media Queries para diseño Mobile-Friendly (Menor a 768px) */
+@media (max-width: 768px) {
+    /* Rejillas colapsables a una columna */
+    .grid-2col, .grid-details {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+
+    /* Adaptación del menú de navegación superior */
+    .navbar {
+        flex-direction: column;
+        gap: 1.25rem;
+        text-align: center;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .nav-links a {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    /* Encabezado principal del panel */
+    .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .dashboard-header .btn {
+        justify-content: center;
+        width: 100%;
+    }
+
+    /* Márgenes del contenido principal */
+    main {
+        margin: 1rem auto;
+        padding: 0 1rem;
+    }
+}
