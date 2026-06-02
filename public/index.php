@@ -14,8 +14,15 @@ define('ROOT_PATH', dirname(__DIR__));
 // Cargar la configuración y variables de entorno antes de definir constantes
 require_once ROOT_PATH . '/config/config.php';
 
-// Definir la URL base de forma dinámica
-define('BASE_URL', getenv('BASE_URL') !== false ? getenv('BASE_URL') : '/taller');
+// Determinar la URL base de forma dinámica y segura
+if (getenv('BASE_URL') !== false) {
+    $baseUrl = trim(getenv('BASE_URL'), '"\' ');
+} elseif (getenv('APACHE_DOCUMENT_ROOT') !== false || file_exists('/.dockerenv')) {
+    $baseUrl = '';
+} else {
+    $baseUrl = '/taller';
+}
+define('BASE_URL', $baseUrl);
 
 // Registrar spl_autoload_register para el cargador de clases automático (Autoloader)
 spl_autoload_register(function ($class) {
