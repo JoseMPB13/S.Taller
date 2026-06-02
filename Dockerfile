@@ -1,15 +1,16 @@
 # Usar la imagen oficial de PHP con Apache en su versión 8.2
 FROM php:8.2-apache
 
-# Instalar dependencias del sistema y extensiones de PHP necesarias para PDO MySQL y FPDF (GD)
+# Instalar dependencias del sistema y extensiones de PHP necesarias para PDO MySQL, PDO PostgreSQL y FPDF (GD)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libpq-dev \
     zip \
     unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -y gd pdo pdo_mysql
+    && docker-php-ext-install gd pdo pdo_mysql pdo_pgsql
 
 # Habilitar el módulo mod_rewrite de Apache para soportar rutas amigables (.htaccess)
 RUN a2enmod rewrite

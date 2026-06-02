@@ -82,7 +82,7 @@ class WorkOrder extends BaseModel {
 
             // Generar Código (OT-YYYY-XXXX)
             $year = date('Y');
-            $stmtCount = $this->db->prepare("SELECT COUNT(*) FROM ordenes_trabajo WHERE YEAR(fecha_ingreso) = :year");
+            $stmtCount = $this->db->prepare("SELECT COUNT(*) FROM ordenes_trabajo WHERE EXTRACT(YEAR FROM fecha_ingreso) = :year");
             $stmtCount->execute(['year' => $year]);
             $count = $stmtCount->fetchColumn() + 1;
             $codigo = sprintf("OT-%s-%04d", $year, $count);

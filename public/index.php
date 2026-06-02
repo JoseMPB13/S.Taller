@@ -10,7 +10,12 @@ ini_set('display_errors', 1);
 
 // Definir constante del directorio raíz de la aplicación
 define('ROOT_PATH', dirname(__DIR__));
-define('BASE_URL', '/taller');
+
+// Cargar la configuración y variables de entorno antes de definir constantes
+require_once ROOT_PATH . '/config/config.php';
+
+// Definir la URL base de forma dinámica
+define('BASE_URL', getenv('BASE_URL') !== false ? getenv('BASE_URL') : '/taller');
 
 // Registrar spl_autoload_register para el cargador de clases automático (Autoloader)
 spl_autoload_register(function ($class) {
