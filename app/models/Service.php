@@ -60,8 +60,8 @@ class Service extends BaseModel {
      * @return bool
      */
     public function create(array $data): bool {
-        $sql = "INSERT INTO servicios (nombre_servicio, descripcion, tiempo_estimado, precio_base, impuestos_descuentos, estado) 
-                VALUES (:nombre_servicio, :descripcion, :tiempo_estimado, :precio_base, :impuestos_descuentos, :estado)";
+        $sql = "INSERT INTO servicios (nombre_servicio, descripcion, tiempo_estimado, precio_base, estado) 
+                VALUES (:nombre_servicio, :descripcion, :tiempo_estimado, :precio_base, :estado)";
         
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
@@ -69,7 +69,6 @@ class Service extends BaseModel {
             'descripcion'          => !empty($data['descripcion']) ? trim($data['descripcion']) : null,
             'tiempo_estimado'      => (int)($data['tiempo_estimado'] ?? 0),
             'precio_base'          => (float)($data['precio_base'] ?? 0.0),
-            'impuestos_descuentos' => $data['impuestos_descuentos'] ?? null,
             'estado'               => $data['estado'] ?? 'activo'
         ]);
     }
@@ -87,7 +86,6 @@ class Service extends BaseModel {
                     descripcion = :descripcion, 
                     tiempo_estimado = :tiempo_estimado, 
                     precio_base = :precio_base, 
-                    impuestos_descuentos = :impuestos_descuentos, 
                     estado = :estado 
                 WHERE id = :id AND deleted_at IS NULL";
 
@@ -98,7 +96,6 @@ class Service extends BaseModel {
             'descripcion'          => !empty($data['descripcion']) ? trim($data['descripcion']) : null,
             'tiempo_estimado'      => (int)($data['tiempo_estimado'] ?? 0),
             'precio_base'          => (float)($data['precio_base'] ?? 0.0),
-            'impuestos_descuentos' => $data['impuestos_descuentos'] ?? null,
             'estado'               => $data['estado'] ?? 'activo'
         ]);
     }

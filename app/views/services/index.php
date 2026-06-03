@@ -53,7 +53,6 @@
                     <th>Descripción</th>
                     <th>Tiempo Estimado</th>
                     <th>Precio Base</th>
-                    <th>Impuestos / Descuentos</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -61,17 +60,12 @@
             <tbody>
                 <?php if (empty($services)): ?>
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem 0;">
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem 0;">
                             No se encontraron servicios registrados en el catálogo.
                         </td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($services as $s): ?>
-                        <?php 
-                        $taxesData = json_decode($s['impuestos_descuentos'] ?? '{}', true);
-                        $iva = $taxesData['impuesto_iva'] ?? 0.0;
-                        $desc = $taxesData['descuento_max'] ?? 0.0;
-                        ?>
                         <tr>
                             <td>
                                 <strong><?php echo htmlspecialchars($s['nombre_servicio']); ?></strong>
@@ -87,10 +81,6 @@
                             </td>
                             <td>
                                 <strong><?php echo number_format($s['precio_base'], 2, ',', '.'); ?> BOB</strong>
-                            </td>
-                            <td>
-                                <span style="font-size: 0.85rem;">IVA: <code><?php echo $iva; ?>%</code></span>
-                                <br><span style="font-size: 0.85rem; color: var(--text-muted);">Desc. Máx: <code><?php echo $desc; ?>%</code></span>
                             </td>
                             <td>
                                 <?php if ($s['estado'] === 'activo'): ?>

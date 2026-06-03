@@ -6,7 +6,7 @@ unset($_SESSION['form_service_data']);
 
 $isEdit = ($service !== null);
 $titulo = $isEdit ? 'Editar Servicio' : 'Nuevo Servicio';
-$subtitulo = $isEdit ? 'Modifique las tarifas, impuestos y tiempos estimados del servicio.' : 'Registre la información básica, precio base y restricciones de descuento del nuevo servicio técnico.';
+$subtitulo = $isEdit ? 'Modifique las tarifas y tiempos estimados del servicio.' : 'Registre la información básica y precio base del nuevo servicio técnico.';
 $actionUrl = $isEdit ? BASE_URL . '/servicios/actualizar/' . $service['id'] : BASE_URL . '/servicios/guardar';
 
 // Cargar valores para rellenar campos
@@ -15,10 +15,7 @@ $descripcionVal = $isEdit ? $service['descripcion'] : ($formData['descripcion'] 
 $tiempoVal = $isEdit ? $service['tiempo_estimado'] : ($formData['tiempo_estimado'] ?? '60');
 $precioBaseVal = $isEdit ? $service['precio_base'] : ($formData['precio_base'] ?? '0.00');
 
-// Decodificar impuestos y descuentos
-$taxesJson = $isEdit ? json_decode($service['impuestos_descuentos'] ?? '{}', true) : [];
-$ivaVal = $isEdit ? ($taxesJson['impuesto_iva'] ?? '13.00') : ($formData['impuesto_iva'] ?? '13.00');
-$descuentoMaxVal = $isEdit ? ($taxesJson['descuento_max'] ?? '0.00') : ($formData['descuento_max'] ?? '0.00');
+
 ?>
 
 <div class="dashboard-header">
@@ -68,17 +65,7 @@ $descuentoMaxVal = $isEdit ? ($taxesJson['descuento_max'] ?? '0.00') : ($formDat
             </div>
         </div>
 
-        <div class="grid-2col">
-            <div class="form-group">
-                <label class="form-label" for="impuesto_iva">Impuesto Aplicable (IVA %) *</label>
-                <input class="form-control" type="number" name="impuesto_iva" id="impuesto_iva" min="0" max="100" step="0.01" value="<?php echo htmlspecialchars($ivaVal); ?>" required>
-            </div>
 
-            <div class="form-group">
-                <label class="form-label" for="descuento_max">Descuento Máximo Permitido (%) *</label>
-                <input class="form-control" type="number" name="descuento_max" id="descuento_max" min="0" max="100" step="0.01" value="<?php echo htmlspecialchars($descuentoMaxVal); ?>" required>
-            </div>
-        </div>
 
         <?php if ($isEdit): ?>
             <div class="form-group">

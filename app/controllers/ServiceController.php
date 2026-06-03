@@ -54,21 +54,11 @@ class ServiceController {
         $tiempo_estimado = (int)($_POST['tiempo_estimado'] ?? 0);
         $precio_base = (float)($_POST['precio_base'] ?? 0.00);
 
-        // Impuestos y Descuentos como JSON
-        $impuesto_iva = (float)($_POST['impuesto_iva'] ?? 0.00);
-        $descuento_max = (float)($_POST['descuento_max'] ?? 0.00);
-        $impuestos_descuentos = json_encode([
-            'impuesto_iva' => $impuesto_iva,
-            'descuento_max' => $descuento_max
-        ], JSON_UNESCAPED_UNICODE);
-
         $errors = [];
 
         if (empty($nombre_servicio)) $errors[] = "El nombre del servicio es obligatorio.";
         if ($tiempo_estimado <= 0) $errors[] = "El tiempo estimado de realización (en minutos) debe ser mayor a 0.";
         if ($precio_base < 0) $errors[] = "El precio base del servicio no puede ser negativo.";
-        if ($impuesto_iva < 0 || $impuesto_iva > 100) $errors[] = "El porcentaje de IVA debe estar entre 0% y 100%.";
-        if ($descuento_max < 0 || $descuento_max > 100) $errors[] = "El porcentaje de descuento máximo debe estar entre 0% y 100%.";
 
         if (!empty($errors)) {
             $_SESSION['error'] = implode('<br>', $errors);
@@ -82,7 +72,6 @@ class ServiceController {
             'descripcion'          => $descripcion,
             'tiempo_estimado'      => $tiempo_estimado,
             'precio_base'          => $precio_base,
-            'impuestos_descuentos' => $impuestos_descuentos,
             'estado'               => 'activo'
         ];
 
@@ -143,21 +132,11 @@ class ServiceController {
         $precio_base = (float)($_POST['precio_base'] ?? 0.00);
         $estado = $_POST['estado'] ?? 'activo';
 
-        // Impuestos y Descuentos como JSON
-        $impuesto_iva = (float)($_POST['impuesto_iva'] ?? 0.00);
-        $descuento_max = (float)($_POST['descuento_max'] ?? 0.00);
-        $impuestos_descuentos = json_encode([
-            'impuesto_iva' => $impuesto_iva,
-            'descuento_max' => $descuento_max
-        ], JSON_UNESCAPED_UNICODE);
-
         $errors = [];
 
         if (empty($nombre_servicio)) $errors[] = "El nombre del servicio es obligatorio.";
         if ($tiempo_estimado <= 0) $errors[] = "El tiempo estimado de realización (en minutos) debe ser mayor a 0.";
         if ($precio_base < 0) $errors[] = "El precio base del servicio no puede ser negativo.";
-        if ($impuesto_iva < 0 || $impuesto_iva > 100) $errors[] = "El porcentaje de IVA debe estar entre 0% y 100%.";
-        if ($descuento_max < 0 || $descuento_max > 100) $errors[] = "El porcentaje de descuento máximo debe estar entre 0% y 100%.";
 
         if (!empty($errors)) {
             $_SESSION['error'] = implode('<br>', $errors);
@@ -170,7 +149,6 @@ class ServiceController {
             'descripcion'          => $descripcion,
             'tiempo_estimado'      => $tiempo_estimado,
             'precio_base'          => $precio_base,
-            'impuestos_descuentos' => $impuestos_descuentos,
             'estado'               => $estado
         ];
 
