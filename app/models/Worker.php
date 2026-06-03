@@ -24,7 +24,7 @@ class Worker extends BaseModel {
      */
     public function getAll(?string $search = null): array {
         $sql = "SELECT t.id, t.nombres, t.apellidos, t.documento, t.nivel, t.contacto, t.disponibilidad, t.estado, t.deleted_at,
-                       GROUP_CONCAT(te.especialidad SEPARATOR ', ') AS especialidades 
+                       string_agg(te.especialidad, ', ') AS especialidades 
                 FROM trabajadores t
                 LEFT JOIN trabajador_especialidades te ON t.id = te.trabajador_id
                 WHERE t.deleted_at IS NULL";
@@ -56,7 +56,7 @@ class Worker extends BaseModel {
      */
     public function getById(int $id) {
         $sql = "SELECT t.id, t.nombres, t.apellidos, t.documento, t.nivel, t.contacto, t.disponibilidad, t.estado, t.deleted_at,
-                       GROUP_CONCAT(te.especialidad SEPARATOR ', ') AS especialidades 
+                       string_agg(te.especialidad, ', ') AS especialidades 
                 FROM trabajadores t
                 LEFT JOIN trabajador_especialidades te ON t.id = te.trabajador_id
                 WHERE t.id = :id AND t.deleted_at IS NULL
